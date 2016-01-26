@@ -171,7 +171,13 @@ namespace PBS.Service
             MemoryStream output = new MemoryStream();
             using (MagickImage image = new MagickImage(ms))
             {
-                image.SetDefine(ImageMagick.MagickFormat.Png8, "compression", "lzw");
+                image.Strip();
+                image.Format = MagickFormat.Jpeg;
+                image.Quality = 80;
+                image.Depth = 8;
+                image.BackgroundColor = new MagickColor(255, 255, 255);
+                image.CompressionMethod = CompressionMethod.DXT1;
+                //image.SetDefine(ImageMagick.MagickFormat.Png8, "compression", "lzw");
                 image.Write(output);
             }
             result = output.GetBuffer();

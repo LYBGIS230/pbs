@@ -132,14 +132,14 @@ namespace PBS.APP.ViewModels
                 string func = (string)p;
                 if (func == "Func1")
                 {
-                    DataSourceAdjustCoord transferSource = new DataSourceAdjustCoord("D:\\PBS\\PBS-Prd9\\cache\\SH.mbtiles");
+                    DataSourceAdjustCoord transferSource = new DataSourceAdjustCoord("D:\\yygyxkjy\\DevHome\\PBS\\PortableBasemapServer\\bin\\Debug\\cache\\LZW.mbtiles");
                     Datasource = transferSource;
                     (transferSource as DataSourceAdjustCoord).ConvertCompleted += (s1, a1) =>
                     {
                         string str1 = App.Current.FindResource("msgAdjustComplete").ToString();
                         MessageBox.Show(str1, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     };
-                    transferSource.ConvertToMBTiles(Output, "", "", "", new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}, null, false);
+                    transferSource.ConvertToMBTiles(Output, "", "", "", new int[]{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}, null, false);
                 }
                 else if (func == "Func2")
                 {
@@ -175,15 +175,12 @@ namespace PBS.APP.ViewModels
                 BaiduTileLayer l = new BaiduTileLayer() { baseUrl = _pbsService.UrlArcGIS };
                 _map.Layers.Insert(0, l);
                 Util.Envelope initial = _pbsService.DataSource.TilingScheme.InitialExtent;
-                //Util.Point pLeftTop = Utility.GeographicToWebMercator(new Util.Point(initial.XMin, initial.YMax));
-                //Util.Point pRightBottom = Utility.GeographicToWebMercator(new Util.Point(initial.XMax, initial.YMin));
                 initalExtend = new ESRI.ArcGIS.Client.Geometry.Envelope(initial.XMin, initial.YMin, initial.XMax,initial.YMax);
             }
         }
         private void ZoomToInitialExtend(object parameters)
         {
             _map.ZoomTo(initalExtend);
-            _pbsService.DataSource.GetTileBytes(6, 15, 31);
         }
         protected override void StartButtonClicked(object parameters)
         {

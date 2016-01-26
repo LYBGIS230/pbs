@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Data.SQLite;
 using PBS.Util;
+using System.Threading;
 
 namespace PBS.DataSource
 {
@@ -89,6 +90,7 @@ namespace PBS.DataSource
         {
             lock (_lockObj)
             {
+                Utility.Log(LogLevel.Info, null, "Thread:" + Thread.CurrentThread.ManagedThreadId + " endted at " + DateTime.Now.Ticks);
                 using (SQLiteConnection conn = new SQLiteConnection("Data source = " + _outputFile))
                 {
                     conn.Open();
@@ -121,8 +123,15 @@ namespace PBS.DataSource
                     {
                         if (transaction != null)
                             transaction.Dispose();
+                        if (conn != null)
+                        {
+                            conn.Close();
+                            conn.Dispose();
+                        }
+                        Utility.Log(LogLevel.Info, null, "Thread:" + Thread.CurrentThread.ManagedThreadId + " left at " + DateTime.Now.Ticks);
                     }
                 }
+
             }
         }
         public void doTest()

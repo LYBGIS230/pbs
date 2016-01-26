@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<onlinemapsources>
+  <onlinemapsource id="0">
+    <name mainType="BaiduMBTiles">BaiduBase</name>
+    <url><![CDATA[http://online{3}.map.bdimg.com/onlinelabel/?qt=tile&x={1}&y={2}&z={0}&styles=pl&scaler=1]]></url>
+    <servers>0,1,2,3,4,5,6,7,8,9</servers>
+  </onlinemapsource>
+  <onlinemapsource id="1">
+    <name mainType="BaiDuOnline">BaiduHot</name>
+    <url><![CDATA[http://shangetu{4}.map.bdimg.com/it/u=x={1};y={2};z={0};v={3};type=hot&fm=44]]></url>
+    <servers>0,1,2,3,4,5,6,7,8,9</servers>
+  </onlinemapsource>
+  <onlinemapsource id="2">
+    <name mainType="BaiduMBTiles">BaiduSate</name>
+    <url><![CDATA[http://shangetu{4}.map.bdimg.com/it/u=x={1};y={2};z={0};v={3};type=sate&fm=46]]></url>
+    <servers>0,1,2,3,4,5,6,7,8,9</servers>
+  </onlinemapsource>
+  <onlinemapsource id="3">
+    <name mainType="BaiDuOnline">BaiduTraffic</name>
+    <url><![CDATA[http://its.map.baidu.com:8002/traffic/TrafficTileService?level={0}&x={1}&y={2}&time={3}&v=081&smallflow=1&scaler=1]]></url>
+    <servers>0,1,2,3,4,5,6,7,8,9</servers>
+  </onlinemapsource>
+  <onlinemapsource id="4">
+    <name mainType="BaiDuOnline">BaiduTrafficHis</name>
+    <url><![CDATA[http://its.map.baidu.com:8002/traffic/HistoryService?level={0}&x={1}&y={2}&day={4}&hour={5}&t={3}&v=081&smallflow=1&scaler=1]]></url>
+    <servers>0,1,2,3,4,5,6,7,8,9</servers>
+  </onlinemapsource>
+</onlinemapsources>

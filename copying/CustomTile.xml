@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Services>
+  <TileInfo type="BaiDuOnline" subType="default" name="default">
+    <MapUrl value="http://172.16.233.189/ArcGIS/rest/services/baoshan/baoshan/MapServer/tile/{0}/{1}/{2}"/>
+    <SpatialReference wkid="3857"/>
+    <Rows value="256"/>
+    <Cols value="256"/>
+    <Dpi  value="96"/>
+    <Origin x="-20037508.3427892" y = "20037508.3427892"/>
+    <Lods>
+      <Lod  level="0" resolution="262144" scale="990780472.440945"/>
+      <Lod  level="1" resolution="131072" scale="495390236.220472"/>
+      <Lod  level="2" resolution="65536" scale="247695118.110236"/>
+      <Lod  level="3" resolution="32768" scale="123847559.055118"/>
+      <Lod  level="4" resolution="16384" scale="61923779.5275591"/>
+      <Lod  level="5" resolution="8192" scale="30961889.7637795"/>
+      <Lod  level="6" resolution="4096" scale="15480944.8818898"/>
+      <Lod  level="7" resolution="2048" scale="7740472.44094488"/>
+      <Lod  level="8" resolution="1024" scale="3870236.22047244"/>
+      <Lod  level="9" resolution="512" scale="1935118.11023622"/>
+      <Lod  level="10" resolution="256" scale="967559.05511811"/>
+      <Lod  level="11" resolution="128" scale="483779.527559055"/>
+      <Lod  level="12" resolution="64" scale="241889.763779528"/>
+      <Lod  level="13" resolution="32" scale="120944.881889764"/>
+      <Lod  level="14" resolution="16" scale="60472.4409448819"/>
+      <Lod  level="15" resolution="8" scale="30236.2204724409"/>
+      <Lod  level="16" resolution="4" scale="15118.1102362205"/>
+      <Lod  level="17" resolution="2" scale="7559.05511811024"/>
+      <Lod  level="18" resolution="1" scale="3779.52755905512"/>
+      <Lod  level="19" resolution="0.5" scale="1889.76377952756"/>
+    </Lods>
+    <InitialExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
+    <FullExtent xmin="-20037508.3427892" ymin="-20037508.3427892" xmax="20037508.3427892" ymax="20037508.3427892"/>
+    <DownLoadExtent xmin="121.405" ymin="31.353" xmax="121.513" ymax="31.417"/>
+    <MainTypeUrlConfig path="BaiduMaps.xml"/>
+  </TileInfo>
+  <TileInfo type="OtherMap1" subType="default" name="default">
+    <MapUrl value="http://172.16.232.208:6081/PBS/rest/services/baseMap/MapServer/tile/{0}/{1}/{2}"/>
+    <SpatialReference wkid="3857"/>
+    <Rows value="256"/>
+    <Cols value="256"/>
+    <Dpi  value="96"/>
+    <Origin x="-20037508.3427892" y = "20037508.3427892"/>
+    <Lods>
+      <Lod  level="0" resolution="262144" scale="990780472.440945"/>
+      <Lod  level="1" resolution="131072" scale="495390236.220472"/>
+      <Lod  level="2" resolution="65536" scale="247695118.110236"/>
+      <Lod  level="3" resolution="32768" scale="123847559.055118"/>
+      <Lod  level="4" resolution="16384" scale="61923779.5275591"/>
+      <Lod  level="5" resolution="8192" scale="30961889.7637795"/>
+      <Lod  level="6" resolution="4096" scale="15480944.8818898"/>
+      <Lod  level="7" resolution="2048" scale="7740472.44094488"/>
+      <Lod  level="8" resolution="1024" scale="3870236.22047244"/>
+      <Lod  level="9" resolution="512" scale="1935118.11023622"/>
+      <Lod  level="10" resolution="256" scale="967559.05511811"/>
+      <Lod  level="11" resolution="128" scale="483779.527559055"/>
+      <Lod  level="12" resolution="64" scale="241889.763779528"/>
+      <Lod  level="13" resolution="32" scale="120944.881889764"/>
+      <Lod  level="14" resolution="16" scale="60472.4409448819"/>
+      <Lod  level="15" resolution="8" scale="30236.2204724409"/>
+      <Lod  level="16" resolution="4" scale="15118.1102362205"/>
+      <Lod  level="17" resolution="2" scale="7559.05511811024"/>
+      <Lod  level="18" resolution="1" scale="3779.52755905512"/>
+      <Lod  level="19" resolution="0.5" scale="1889.76377952756"/>
+    </Lods>
+    <InitialExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
+    <FullExtent xmin="-20037508.3427892" ymin="-20037508.3427892" xmax="20037508.3427892" ymax="20037508.3427892"/>
+    <DownLoadExtent xmin="121.405" ymin="31.353" xmax="121.513" ymax="31.417"/>
+    <MainTypeUrlConfig path="BaiduMaps.xml"/>
+  </TileInfo>
+  <TileInfo type="OtherMap" subType="default" name="default">
+    <MapUrl value="http://172.16.233.192/ArcGIS/rest/services/baoshan/MapServer/tile/{0}/{1}/{2}"/>
+    <SpatialReference wkid="4326"/>
+    <Rows value="256"/>
+    <Cols value="256"/>
+    <Dpi  value="96"/>
+    <Origin x="-400" y = "400"/>
+    <Lods>
+      <Lod  level="0" resolution="0.00237946100583028" scale="1000000"/>
+      <Lod  level="1" resolution="0.00118973050291514" scale="500000"/>
+      <Lod  level="2" resolution="0.00059486525145757" scale="250000"/>
+      <Lod  level="3" resolution="0.000297432625728785" scale="125000"/>
+      <Lod  level="4" resolution="0.000152285504373138" scale="64000"/>
+      <Lod  level="5" resolution="7.61427521865689E-05" scale="32000"/>
+      <Lod  level="6" resolution="3.80713760932845E-05" scale="16000"/>
+    </Lods>
+    <InitialExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
+    <FullExtent xmin="-20037508.3427892" ymin="-20037508.3427892" xmax="20037508.3427892" ymax="20037508.3427892"/>
+    <DownLoadExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
+    <MainTypeUrlConfig path="BaiduMaps.xml"/>
+  </TileInfo>
+  <TileInfo type="OtherMap3" subType="default" name="default">
+    <MapUrl value="http://172.16.137.51:50028/liuzhou/EzMap?Service=getImage&amp;Type=RGB&amp;ZoomOffset=0&amp;Col={2}&amp;Row={1}&amp;Zoom={0}&amp;V=1.0.0"/>
+    <SpatialReference wkid="4490"/>
+    <Rows value="256"/>
+    <Cols value="256"/>
+    <Dpi  value="96"/>
+    <Origin x="-180" y="90"/>
+    <Lods>
+      <Lod  level="0" resolution="1.40625" scale="5.9165871090913e+8"/>
+      <Lod  level="1" resolution="0.7031250000000002" scale="2.958293554545656E8"/>
+      <Lod  level="2" resolution="0.3515625000000001" scale="1.479146777272828E8"/>
+      <Lod  level="3" resolution="0.1757812500000001" scale="7.39573388636414E7"/>
+      <Lod  level="4" resolution="0.087890625" scale="3.69786694318207E7"/>
+      <Lod  level="5" resolution="0.0439453125" scale="1.848933471591035E7"/>
+      <Lod  level="6" resolution="0.02197265625" scale="9244667.357955175"/>
+      <Lod  level="7" resolution="0.010986328125" scale="4622333.678977588"/>
+      <Lod  level="8" resolution="0.0054931640625" scale="2311166.839488794"/>
+      <Lod  level="9" resolution="0.00274658203125" scale="1155583.419744397"/>
+      <Lod  level="10" resolution="0.001373291015625" scale="577791.7098721985"/>
+      <Lod  level="11" resolution="6.866455078125002e-4" scale="288895.85493609926"/>
+      <Lod  level="12" resolution="3.433227539062501e-4" scale="144447.92746804963"/>
+      <Lod  level="13" resolution="1.71661376953125e-4" scale="72223.96373402482"/>
+      <Lod  level="14" resolution="8.583068847656252e-5" scale="36111.98186701241"/>
+      <Lod  level="15" resolution="4.291534423828126e-5" scale="18055.990933506204"/>
+      <Lod  level="16" resolution="2.145767211914063e-5" scale="9027.995466753102"/>
+      <Lod  level="17" resolution="1.072883605957032e-5" scale="4513.997733376551"/>
+    </Lods>
+    <InitialExtent xmin="108.8886" ymin="24.0569" xmax="109.871" ymax="24.6326"/>
+    <FullExtent xmin="-180" ymin="-90" xmax="180" ymax="90"/>
+    <DownLoadExtent xmin="108.519400855461" ymin="23.8650391721479" xmax="110.150870582024" ymax="26.0815308713671"/>
+    <MainTypeUrlConfig path="Unknown.xml"/>
+  </TileInfo>
+</Services>

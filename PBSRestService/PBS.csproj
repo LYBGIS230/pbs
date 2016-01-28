@@ -52,12 +52,6 @@
       <HintPath>..\using\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Magick.NET-AnyCPU">
-      <HintPath>..\using\Magick.NET-AnyCPU.dll</HintPath>
-    </Reference>
-    <Reference Include="Magick.NET.Core">
-      <HintPath>..\using\Magick.NET.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Memcached.ClientLibrary, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42c0400964dcc297, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\using\Memcached.ClientLibrary.dll</HintPath>

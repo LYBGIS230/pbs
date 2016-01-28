@@ -83,7 +83,7 @@
                             <ColumnDefinition Width="120" />
                             <ColumnDefinition Width="140" />
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Content="{DynamicResource btnSaveArea}" Height="23" Command="{Binding CMDSaveArea}" Width="75" />
+                        <Button Grid.Column="0" Content="{DynamicResource btnSaveArea}" Height="23" Command="{Binding CMDSaveArea}" Width="75" Visibility="Collapsed" />
                         <Button Grid.Column="1" Margin="0,5,0,5" Width="100" Content="{DynamicResource btnStart}" Command="{Binding CMDClickStartButton}" />
                         <Button Grid.Column="2" Content="{DynamicResource btnReset}" Height="23" Command="{Binding CMDResetArea}" Width="75" />
                         <CheckBox Grid.Column="3" Content="{DynamicResource cbAutoConfirm}" IsChecked="{Binding AutoConfirm,Mode=OneWayToSource}" Margin="0,8,15,0" />

@@ -106,6 +106,10 @@ namespace PBS.DataSource
                 byte colorA = (byte)((leftTop[3] * (1 - deltX) + deltX * rightTop[3]) * (1 - deltY) + deltY * (leftBottom[3] * (1 - deltX) + deltX * rightBottom[3]));
                 result = ((colorA << 24) | (colorR << 16) | (colorG << 8) | colorB);
             }
+            if (result == 0)
+            {
+                result = 16777215;
+            }
             return result;
         }
         /***

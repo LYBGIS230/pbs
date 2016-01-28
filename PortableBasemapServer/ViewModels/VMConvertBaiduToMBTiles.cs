@@ -14,8 +14,6 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.IO;
 using System.Collections.ObjectModel;
-using PBS.Util;
-using ImageMagick;
 
 namespace PBS.APP.ViewModels
 {  
@@ -132,29 +130,12 @@ namespace PBS.APP.ViewModels
                 string func = (string)p;
                 if (func == "Func1")
                 {
-                    DataSourceAdjustCoord transferSource = new DataSourceAdjustCoord("D:\\yygyxkjy\\DevHome\\PBS\\PortableBasemapServer\\bin\\Debug\\cache\\LZW.mbtiles");
-                    Datasource = transferSource;
-                    (transferSource as DataSourceAdjustCoord).ConvertCompleted += (s1, a1) =>
-                    {
-                        string str1 = App.Current.FindResource("msgAdjustComplete").ToString();
-                        MessageBox.Show(str1, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    };
-                    transferSource.ConvertToMBTiles(Output, "", "", "", new int[]{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}, null, false);
                 }
                 else if (func == "Func2")
                 {
-                    System.Drawing.Bitmap png = new System.Drawing.Bitmap("D:\\PBS\\PBS-Prd9\\cache\\T.png");
-                    System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(png);
-                    System.Drawing.Drawing2D.CompositingQuality q = g.CompositingQuality;
-                    System.Drawing.Drawing2D.InterpolationMode m = g.InterpolationMode;
                 }
                 else if(func == "Func3")
                 {
-                    using (MagickImage image = new MagickImage("C:\\Users\\wenvi\\Desktop\\Thread.png"))
-                    {
-                        image.SetDefine(ImageMagick.MagickFormat.Png8, "compression", "lzw");
-                        image.Write("C:\\Users\\wenvi\\Desktop\\T_C.png");
-                    }
                 }
             };
             dw.ShowDialog();            

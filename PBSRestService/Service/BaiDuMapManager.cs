@@ -11,7 +11,6 @@ using System.Windows;
 using Point = PBS.Util.Point;
 using PBS.Service;
 using System.Xml.Linq;
-using ImageMagick;
 using PBS.DataSource;
 using System.Runtime.Caching;
 using System.Collections.Specialized;
@@ -50,6 +49,7 @@ namespace PBS.Service
         public CacheVersionProvider cp;
         public ObjectCache instantCache;
         private CacheItemPolicy policy;
+        private System.Drawing.Imaging.ImageCodecInfo jpegCodec;
         public string RunMode;
         public void initCache()
         {
@@ -155,53 +155,54 @@ namespace PBS.Service
                     }
                 }
             }
-            //canvas.Save("whole.png", System.Drawing.Imaging.ImageFormat.Png);
             FastImageConvertor c = new FastImageConvertor();
             Bitmap destBitmap = c.ConvertToSquare(canvas, newLeftTop, newRightTop, newLeftBottom, newRightBottom);
             MemoryStream output = new MemoryStream();
             destBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
-            //destBitmap.Save("part.png", System.Drawing.Imaging.ImageFormat.Png);
             bytes = output.GetBuffer();
             return bytes;
         }
         public byte[] compressPNG(byte[] srcBytes)
         {
-            byte[] result;
+            //byte[] result;
             MemoryStream ms = new MemoryStream(srcBytes);
-            MemoryStream output = new MemoryStream();
+            /*MemoryStream output = new MemoryStream();
             using (MagickImage image = new MagickImage(ms))
             {
-                image.Strip();
                 image.Format = MagickFormat.Jpeg;
                 image.Quality = 80;
                 image.Depth = 8;
-                image.BackgroundColor = new MagickColor(255, 255, 255);
-                image.CompressionMethod = CompressionMethod.DXT1;
-                //image.SetDefine(ImageMagick.MagickFormat.Png8, "compression", "lzw");
                 image.Write(output);
             }
             result = output.GetBuffer();
-            return result;
-            /*ms.Position = 0;
+            return result;*/
+            ms.Position = 0;
             Image srcBitmap = Bitmap.FromStream(ms);
             MemoryStream output = new MemoryStream();
             System.Drawing.Imaging.EncoderParameters ep = new System.Drawing.Imaging.EncoderParameters(2);
             ep.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.ColorDepth, 8L);
             ep.Param[1] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 80L);
-            srcBitmap.Save(output, GetEncoderInfo("image/jpeg"), ep);
-            return output.GetBuffer();*/
+            srcBitmap.Save(output, GetEncoderInfo(), ep);
+            return output.GetBuffer();
         }
-        private System.Drawing.Imaging.ImageCodecInfo GetEncoderInfo(String mimeType)
+        private System.Drawing.Imaging.ImageCodecInfo GetEncoderInfo()
         {
             int j;
-            System.Drawing.Imaging.ImageCodecInfo[] encoders;
-            encoders = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders();
-            for (j = 0; j < encoders.Length; ++j)
+            if (jpegCodec == null)
             {
-                if (encoders[j].MimeType == mimeType)
-                    return encoders[j];
+                String mimeType = "image/jpeg";
+                System.Drawing.Imaging.ImageCodecInfo[] encoders;
+                encoders = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders();
+                for (j = 0; j < encoders.Length; ++j)
+                {
+                    if (encoders[j].MimeType == mimeType)
+                    {
+                        jpegCodec = encoders[j];
+                        break;
+                    }
+                }
             }
-            return null;
+            return jpegCodec;
         }
         public RCRange getBaiduRCRangeFromGPS(Envelope area, int level)
         {

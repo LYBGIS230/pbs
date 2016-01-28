@@ -88,55 +88,41 @@ namespace PBS.DataSource
         }
         protected override void WriteTilesToSqlite(Dictionary<string, byte[]> dict)
         {
+            int level = 0;
             lock (_lockObj)
             {
-                Utility.Log(LogLevel.Info, null, "Thread:" + Thread.CurrentThread.ManagedThreadId + " endted at " + DateTime.Now.Ticks);
-                using (SQLiteConnection conn = new SQLiteConnection("Data source = " + _outputFile))
-                {
-                    conn.Open();
-                    SQLiteTransaction transaction = conn.BeginTransaction();
-                    try
-                    {
-                        using (SQLiteCommand cmd = new SQLiteCommand(conn))
-                        {
-                            foreach (KeyValuePair<string, byte[]> kvp in dict)
-                            {
-                                int level = int.Parse(kvp.Key.Split(new char[] { '/' })[0]);
-                                int col = int.Parse(kvp.Key.Split(new char[] { '/' })[1]);
-                                int row = int.Parse(kvp.Key.Split(new char[] { '/' })[2]);
-                                string guid = Guid.NewGuid().ToString();
-                                cmd.CommandText = "INSERT INTO images VALUES (@tile_data,@tile_id)";
-                                cmd.Parameters.AddWithValue("tile_data", kvp.Value);
-                                cmd.Parameters.AddWithValue("tile_id", guid);
-                                cmd.ExecuteNonQuery();
-                                cmd.CommandText = "INSERT INTO map VALUES (@zoom_level,@tile_column,@tile_row,@tile_id)";
-                                cmd.Parameters.AddWithValue("zoom_level", level);
-                                cmd.Parameters.AddWithValue("tile_column", col);
-                                cmd.Parameters.AddWithValue("tile_row", row);
-                                cmd.Parameters.AddWithValue("tile_id", guid);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        transaction.Commit();
-                    }
-                    finally
-                    {
-                        if (transaction != null)
-                            transaction.Dispose();
-                        if (conn != null)
-                        {
-                            conn.Close();
-                            conn.Dispose();
-                        }
-                        Utility.Log(LogLevel.Info, null, "Thread:" + Thread.CurrentThread.ManagedThreadId + " left at " + DateTime.Now.Ticks);
-                    }
-                }
+                //Utility.Log(LogLevel.Info, null, "Thread:" + Thread.CurrentThread.ManagedThreadId + " endted at " + DateTime.Now.Ticks);
 
+                SQLiteTransaction transaction = _outputconn.BeginTransaction();
+                try
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand(_outputconn))
+                    {
+                        foreach (KeyValuePair<string, byte[]> kvp in dict)
+                        {
+                            level = int.Parse(kvp.Key.Split(new char[] { '/' })[0]);
+                            int col = int.Parse(kvp.Key.Split(new char[] { '/' })[1]);
+                            int row = int.Parse(kvp.Key.Split(new char[] { '/' })[2]);
+                            string guid = Guid.NewGuid().ToString();
+                            cmd.CommandText = "INSERT INTO images VALUES (@tile_data,@tile_id)";
+                            cmd.Parameters.AddWithValue("tile_data", kvp.Value);
+                            cmd.Parameters.AddWithValue("tile_id", guid);
+                            cmd.ExecuteNonQuery();
+                            cmd.CommandText = "INSERT INTO map VALUES (@zoom_level,@tile_column,@tile_row,@tile_id)";
+                            cmd.Parameters.AddWithValue("zoom_level", level);
+                            cmd.Parameters.AddWithValue("tile_column", col);
+                            cmd.Parameters.AddWithValue("tile_row", row);
+                            cmd.Parameters.AddWithValue("tile_id", guid);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    Utility.Log(LogLevel.Error, null, "Level: " + level + " write tiles to sqlite failed");
+                }
             }
-        }
-        public void doTest()
-        {
-            GetTileBytes(19, 127802, 262177);
         }
         public override void ConvertToMBTiles(string outputPath, string name, string description, string attribution, int[] levels, Geometry geometry, bool doCompact)
         {
@@ -155,6 +141,7 @@ namespace PBS.DataSource
                     _convertingStatus.LevelCompleteCount = _convertingStatus.LevelErrorCount = 0;
                     _levelCompleteCount = _levelErrorCount = 0;
                     SaveOneLevelTilesToMBTiles(levels[i], startR, startC, endR, endC);
+                    Thread.Sleep(500);
                 }
                 if (ConvertCompleted != null)
                 {

@@ -101,6 +101,7 @@
     <Compile Include="DataSource\DataSourceMBTiles.cs" />
     <Compile Include="DataSource\DataSourceMAC.cs" />
     <Compile Include="DataSource\DataSourceOtherMap.cs" />
+    <Compile Include="DataSource\DataSourceOtherMapProxy.cs" />
     <Compile Include="DataSource\DataSourceRasterImage.cs" />
     <Compile Include="DataSource\DataSourceTianDiTuAnno.cs" />
     <Compile Include="DataSource\DataSourceTianDiTuMap.cs" />

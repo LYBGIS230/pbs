@@ -73,6 +73,12 @@ namespace PBS.Service
                     case DataSourceTypePredefined.OtherMap:
                         DataSource = new DataSourceOtherMap(dataSourcePath, false) {Path = dataSourcePath };
                         break;
+                    case DataSourceTypePredefined.OtherMapRoadProxy:
+                        DataSource = new DataSourceOtherMapProxy(DataSourceTypePredefined.OtherMapRoadProxy.ToString());
+                        break;
+                    case DataSourceTypePredefined.OtherMapImageProxy:
+                        DataSource = new DataSourceOtherMapProxy(DataSourceTypePredefined.OtherMapImageProxy.ToString());
+                        break;
                     case DataSourceTypePredefined.MBTiles:
                         DataSource = new DataSourceMBTiles(dataSourcePath);
                         break;

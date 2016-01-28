@@ -1044,7 +1044,9 @@ namespace PBS.APP.ViewModels
                         ValueDataSourceType != DataSourceTypePredefined.MobileAtlasCreator.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.RasterImage.ToString()&&
                         ValueDataSourceType != DataSourceTypePredefined.OGCWMSService.ToString()&&
-                        ValueDataSourceType != DataSourceTypePredefined.OtherMap.ToString())
+                        ValueDataSourceType != DataSourceTypePredefined.OtherMap.ToString()&&
+                        ValueDataSourceType != DataSourceTypePredefined.OtherMapRoadProxy.ToString()&&
+                        ValueDataSourceType != DataSourceTypePredefined.OtherMapImageProxy.ToString())
                     {
                         MessageBox.Show(Application.Current.FindResource("msgOnlineMapsWarning").ToString(), Application.Current.FindResource("msgWarning").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
                     }

@@ -1311,6 +1311,8 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
         TianDiTuAnnotation,
         TianDiTuMap,
         OtherMap,
+        OtherMapRoadProxy,
+        OtherMapImageProxy,
         BaiDuOnline
     }
 

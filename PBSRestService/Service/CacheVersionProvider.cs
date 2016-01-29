@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Data.SQLite;
 using System.IO;
-using PBS.DataSource;
 using PBS.Util;
 using System.Net;
 
@@ -42,36 +41,6 @@ namespace PBS.Service
                 cache.insertOneVersion(version, downloadRule);
             }
         }
-        /*
-        public void RecordDownloadRecord(DataSourceBaiduOnlineMap dataSource, string downloadRule)
-        {
-            ConvertStatus result = dataSource.ConvertingStatus;
-            long start = BaiDuMapManager.inst.ConvertDateTimeLong(result.StartTime) - BaiDuMapManager.inst.delaytime;
-            string status = result.IsCompletedSuccessfully ? "SUCCESS" : "FAILED";
-            double speed = result.CompleteTotalBytes / (result.TimeElapsed.TotalMilliseconds / 1000);
-            MBVersion newOne = new MBVersion()
-            {
-                start = start,
-                end = start + 300 * 60000,
-                version = long.Parse(dataSource.Version),
-                name = dataSource.OutputFileName,
-                threadCount = result.ThreadCount,
-                status = status,
-                timeSpan = result.TimeElapsed.TotalMilliseconds,
-                completeCount = result.CompleteCount,
-                totalCount = result.TotalCount,
-                receivedBytes = result.CompleteTotalBytes,
-                wroteBytes = dataSource.WroteBytes,
-                networkSpeed = speed,
-                wroteCounts = dataSource.WroteCounts
-            };
-            lock (_locker)
-            {
-                cache.insertOneVersion(newOne, downloadRule);
-                HouseKeeping();
-            }
-        }
-        */
         class MemoryCache
         {
             private long baseline_version;
@@ -251,7 +220,7 @@ namespace PBS.Service
                 MBVersion previous = addOneVersion(toAdd);
                 if (previous != null)
                 {
-                    using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.mbtiles"))
+                    using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.db"))
                     {
                         conn.Open();
                         SQLiteTransaction recordTransaction = conn.BeginTransaction();
@@ -399,7 +368,7 @@ namespace PBS.Service
                     temp = head.next;
                 }
                 versionCount = 0;
-                using (SQLiteConnection _conn = new SQLiteConnection("Data source = versions.mbtiles"))
+                using (SQLiteConnection _conn = new SQLiteConnection("Data source = versions.db"))
                 {
                     _conn.Open();
                     loadDataFormDB(_conn);
@@ -408,7 +377,7 @@ namespace PBS.Service
             }
             public MemoryCache()
             {
-                using (SQLiteConnection _conn = new SQLiteConnection("Data source = versions.mbtiles"))
+                using (SQLiteConnection _conn = new SQLiteConnection("Data source = versions.db"))
                 {
                     _conn.Open();
                     loadDataFormDB(_conn);
@@ -441,7 +410,7 @@ namespace PBS.Service
             }
             public void AdjustTime()
             {
-                using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.mbtiles"))
+                using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.db"))
                 {
                     conn.Open();
                     SQLiteTransaction recordTransaction = conn.BeginTransaction();
@@ -461,9 +430,9 @@ namespace PBS.Service
                 }
             }
         }
-        public static int currentVersion = BaiDuMapManager.inst.startVersion;
-        public static int arrangedVersion = BaiDuMapManager.inst.startVersion;
-        private string parameterFile = "versions.mbtiles";
+        public static int currentVersion = 0;
+        public static int arrangedVersion = 0;
+        private string parameterFile = "versions.db";
         private MemoryCache cache;
         public void AdjustTime()
         {
@@ -491,9 +460,12 @@ namespace PBS.Service
         }
         public void initVersionFormWeb()
         {
-            CacheVersionProvider.currentVersion = Convert.ToInt32(getCurrentVersion());
-            CacheVersionProvider.arrangedVersion = getLastDownload() + 1;
-            cache.setPredictBaseLine(CacheVersionProvider.currentVersion, BaiDuMapManager.inst.ConvertDateTimeLong(DateTime.Now));
+            currentVersion = Convert.ToInt32(getCurrentVersion());
+            arrangedVersion = getLastDownload() + 1;
+            if (cache != null)
+            {
+                cache.setPredictBaseLine(currentVersion, BaiDuMapManager.inst.ConvertDateTimeLong(DateTime.Now));
+            }
         }
         public string getLastVersion()
         {
@@ -532,7 +504,7 @@ namespace PBS.Service
         {
             string result = null;
             string commandText = string.Format("SELECT filename FROM TimeNameMap WHERE startTime <= {0} AND endTime >= {0} ", time);
-            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.mbtiles"))
+            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.db"))
             {
                 conn.Open();
                 using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, conn))
@@ -547,7 +519,7 @@ namespace PBS.Service
         public int getLastDownload()
         {
             int version = -1;
-            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.mbtiles"))
+            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.db"))
             {
                 conn.Open();
                 using (SQLiteCommand cmd = new SQLiteCommand(conn))
@@ -568,7 +540,7 @@ namespace PBS.Service
                     }
                     else
                     {
-                        version = BaiDuMapManager.inst.startVersion;
+                        version = currentVersion > 0? currentVersion - 200 : 0;
                     }
                 }
             }
@@ -578,7 +550,7 @@ namespace PBS.Service
         {
             int recordSerial = 0;
             string result = "{\"versions\" : ["; ;
-            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.mbtiles"))
+            using (SQLiteConnection conn = new SQLiteConnection("Data source = versions.db"))
             {
                 conn.Open();
                 using (SQLiteCommand cmd = new SQLiteCommand(conn))
@@ -607,28 +579,48 @@ namespace PBS.Service
             }
             return result;
         }
+        public void resetVersions()
+        {
+            File.Delete(parameterFile);
+            createParameterFile();
+            cache.reloadDataFromDB();
+            initVersionFormWeb();
+        }
+        private void createParameterFile()
+        {
+            SQLiteConnection.CreateFile(parameterFile);
+            using (SQLiteConnection conn = new SQLiteConnection("Data source = " + parameterFile))
+            {
+                conn.Open();
+                using (SQLiteTransaction transaction = conn.BeginTransaction())
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand(conn))
+                    {
+                        cmd.CommandText = "CREATE TABLE TimeNameMap (filename TEXT, startTime INT8, endTime INT8, version INTEGER, threadCount INTEGER, convertStatus TEXT, timeElapsed REAL, tileCompleteCount INTEGER, tileTotalCount INTEGER, totalReceivedBytes INTEGER, totalWroteBytes INTEGER, netWorkSpeed REAL, totalWroteCount INTEGER)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+                    transaction.Dispose();
+                }
+            }
+        }
         public CacheVersionProvider()
         {
             if (!File.Exists(parameterFile))
             {
-                SQLiteConnection.CreateFile(parameterFile);
-                using (SQLiteConnection conn = new SQLiteConnection("Data source = " + parameterFile))
+                createParameterFile();
+                initVersionFormWeb();
+            }
+            else
+            {
+                initVersionFormWeb();
+                if(arrangedVersion > currentVersion + 1)
                 {
-                    conn.Open();
-                    using (SQLiteTransaction transaction = conn.BeginTransaction())
-                    {
-                        using (SQLiteCommand cmd = new SQLiteCommand(conn))
-                        {
-                            cmd.CommandText = "CREATE TABLE TimeNameMap (filename TEXT, startTime INT8, endTime INT8, version INTEGER, threadCount INTEGER, convertStatus TEXT, timeElapsed REAL, tileCompleteCount INTEGER, tileTotalCount INTEGER, totalReceivedBytes INTEGER, totalWroteBytes INTEGER, netWorkSpeed REAL, totalWroteCount INTEGER)";
-                            cmd.ExecuteNonQuery();
-                        }
-                        transaction.Commit();
-                        transaction.Dispose();
-                    }
+                    File.Delete(parameterFile);
+                    createParameterFile();
                 }
             }
             cache = new MemoryCache();
-            initVersionFormWeb();
         }
     }
 }

@@ -114,6 +114,7 @@ namespace PBS.Service
                         break;
                     case DataSourceTypePredefined.BaiDuOnline:
                         DataSource = new DataSourceBaiDuTileProxy(strType);
+                        ((DataSourceBaiDuTileProxy)DataSource).startVersionRepository();
                         break;
                     default:
                         throw new Exception();

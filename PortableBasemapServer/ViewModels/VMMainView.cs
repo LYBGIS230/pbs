@@ -1041,6 +1041,7 @@ namespace PBS.APP.ViewModels
                         ValueDataSourceType != DataSourceTypePredefined.ArcGISTilePackage.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.MBTiles.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.BaiduMBTiles.ToString() &&
+                        ValueDataSourceType != DataSourceTypePredefined.BaiDuOnline.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.MobileAtlasCreator.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.RasterImage.ToString()&&
                         ValueDataSourceType != DataSourceTypePredefined.OGCWMSService.ToString()&&

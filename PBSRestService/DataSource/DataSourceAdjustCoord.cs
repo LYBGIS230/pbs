@@ -141,7 +141,7 @@ namespace PBS.DataSource
                     _convertingStatus.LevelCompleteCount = _convertingStatus.LevelErrorCount = 0;
                     _levelCompleteCount = _levelErrorCount = 0;
                     SaveOneLevelTilesToMBTiles(levels[i], startR, startC, endR, endC);
-                    Thread.Sleep(500);
+                    //Thread.Sleep(500);
                 }
                 if (ConvertCompleted != null)
                 {

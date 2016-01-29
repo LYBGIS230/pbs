@@ -25,10 +25,10 @@ namespace PBS.DataSource
             if (string.IsNullOrEmpty(path))
             {
                 this.serviceType = DataSourceType.DYNAMIC;
-                if (BaiDuMapManager.inst.cp == null)
+                /*if (BaiDuMapManager.inst.cp == null)
                 {
                     BaiDuMapManager.inst.cp = new CacheVersionProvider();
-                }
+                }*/
             }
             else
             {

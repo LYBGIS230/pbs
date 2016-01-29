@@ -94,30 +94,21 @@ namespace PBS.DataSource
                         BaiDuMapManager.inst.cp.RecordDownloadRecord(newOne, "BYTIME");
                         CacheVersionProvider.arrangedVersion = CacheVersionProvider.arrangedVersion + 1;
                     }
+                    else if(version < CacheVersionProvider.arrangedVersion - 1)
+                    {
+                        BaiDuMapManager.inst.cp.resetVersions();
+                        OnTimedEvent(null, null);
+                    }
                 }
 
             }
         }
-        public DataSourceBaiDuTileProxy(string name)
+        public void startVersionRepository()
         {
-            TilingScheme ts;
-            ReadTilingScheme(out ts);
-            TilingScheme = ts;
-            _subDomains = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
             if (BaiDuMapManager.inst.cp == null)
             {
                 BaiDuMapManager.inst.cp = new CacheVersionProvider();
             }
-            baseUrls = new Dictionary<string, string>();
-            string urlConfigFile = SchemaProvider.Inst.getConfigPath(name);
-            _customOnlineMaps = BaiDuMapManager.inst.ReadOnlineMapsConfigFile(urlConfigFile);
-            foreach (CustomOnlineMap m in _customOnlineMaps)
-            {
-                baseUrls.Add(m.Name, m.Url);
-            }
-            this.Type = name;
-            this.Path = "";
-
             Timer t = new Timer(BaiDuMapManager.inst.roundInterval);
             t.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
             t.AutoReset = true;
@@ -128,6 +119,22 @@ namespace PBS.DataSource
 
             }
             OnTimedEvent(null, null);
+        }
+        public DataSourceBaiDuTileProxy(string name)
+        {
+            TilingScheme ts;
+            ReadTilingScheme(out ts);
+            TilingScheme = ts;
+            _subDomains = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };           
+            baseUrls = new Dictionary<string, string>();
+            string urlConfigFile = SchemaProvider.Inst.getConfigPath(name);
+            _customOnlineMaps = BaiDuMapManager.inst.ReadOnlineMapsConfigFile(urlConfigFile);
+            foreach (CustomOnlineMap m in _customOnlineMaps)
+            {
+                baseUrls.Add(m.Name, m.Url);
+            }
+            this.Type = name;
+            this.Path = "";
         }
         private class TrafficHisParam
         {
@@ -178,6 +185,10 @@ namespace PBS.DataSource
                 }
                 else if ("BaiduHot" == _mapName)
                 {
+                    if (BaiDuMapManager.inst.cp == null)
+                    {
+                        BaiDuMapManager.inst.cp = new CacheVersionProvider();
+                    }
                     string recentVersion = BaiDuMapManager.inst.cp.getCurrentVersion();
                     string subdomain = _subDomains[Math.Abs(level + col + row) % _subDomains.Length];
                     uri = string.Format(baseUrls["BaiduHot"], level, col, row, recentVersion, subdomain);

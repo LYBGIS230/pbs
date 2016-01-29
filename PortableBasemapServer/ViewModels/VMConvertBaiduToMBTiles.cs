@@ -41,11 +41,11 @@ namespace PBS.APP.ViewModels
         }
         public VMConvertBaiduToMBTiles(Map esriMap, int port)
         {
-            if (BaiDuMapManager.inst.cp == null)
+            /*if (BaiDuMapManager.inst.cp == null)
             {
                 BaiDuMapManager.inst.cp = new CacheVersionProvider();
-                System.Threading.Tasks.Task.Factory.StartNew(() => { BaiDuMapManager.inst.cp.initVersionFormWeb(); });
-            }
+                //System.Threading.Tasks.Task.Factory.StartNew(() => { BaiDuMapManager.inst.cp.initVersionFormWeb(); });
+            }*/
             if (!PBS.Util.Utility.IsConnectedToInternet())
             {
                 throw new Exception("No internet connectivity!");

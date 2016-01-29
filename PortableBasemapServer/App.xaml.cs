@@ -42,7 +42,6 @@ namespace PBS.APP
                     Directory.CreateDirectory("cache");
                 }
                 BaiDuMapManager.inst.maxThreadCount = int.Parse(AppUtility.ReadConfig("MaxDownloadThread", "100"));
-                BaiDuMapManager.inst.startVersion = int.Parse(AppUtility.ReadConfig("DownloadStartVersion", "34799"));
                 BaiDuMapManager.inst.roundInterval = long.Parse(AppUtility.ReadConfig("RoundInterval", "300000"));
                 BaiDuMapManager.inst.RunMode = AppUtility.ReadConfig("RunningMode", "OFFLINE");
                 BaiDuMapManager.inst.bundleSize = int.Parse(AppUtility.ReadConfig("BundleSize", "16"));

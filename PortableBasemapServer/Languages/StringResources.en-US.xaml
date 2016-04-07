@@ -30,6 +30,8 @@
     <sys:String x:Key="miArcGISToMBTiles">ArcGIS--&gt;MBTiles...</sys:String>
     <sys:String x:Key="miOnlineToMBTiles">OnlineMaps--&gt;MBTiles...</sys:String>
     <sys:String x:Key="miBaiduToMBTiles">BaiduMaps--&gt;MBTiles...</sys:String>
+    <sys:String x:Key="miCorrectBaiduRawTiles">BaiduMaps Correct</sys:String>
+    <sys:String x:Key="miMergeMBTiles">MBTile Merge</sys:String>
     <sys:String x:Key="miOtherToMBTiles">OtherMaps--&gt;MBTiles...</sys:String>
     <sys:String x:Key="menuAppearance">Appearance</sys:String>
     <sys:String x:Key="miLanguage">中文</sys:String>

@@ -730,6 +730,18 @@ namespace PBS.APP.ViewModels
                 {
                 }
             }
+            else if (miHeader == "miCorrectBaiduRawTiles")
+            {
+                try
+                {
+                    BaiduCorrect correctWindow = new BaiduCorrect();
+                    correctWindow.Owner = Application.Current.MainWindow;
+                    correctWindow.Show();
+                }
+                catch (Exception)
+                {
+                }
+            }
             #endregion
             #region Appearance
             else if (miHeader == "miLanguage")

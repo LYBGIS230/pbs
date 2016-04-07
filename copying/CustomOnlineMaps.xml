@@ -12,12 +12,12 @@
 	</onlinemapsource>
 	<onlinemapsource id="2">
 		<name>GoogleMapsRoad</name>
-		<url><![CDATA[http://mt{$s}.google.com/vt/lyrs=m&hl=zh-CN&gl=cn&x={$x}&y={$y}&z={$z}&s=]]></url>
+		<url><![CDATA[http://mt{$s}.google.cn/maps/vt?x={$x}&y={$y}&z={$z}]]></url>
 		<servers>0,1,2,3</servers>
 	</onlinemapsource>
 	<onlinemapsource id="3">
 		<name>GoogleMapsImagery</name>
-		<url><![CDATA[http://mt{$s}.google.com/vt/lyrs=s&gl=cn&x={$x}&y={$y}&z={$z}&s=]]></url>
+		<url><![CDATA[http://mt{$s}.google.cn/maps/vt?lyrs=s&x={$x}&y={$y}&z={$z}]]></url>
 		<servers>0,1,2,3</servers>
 	</onlinemapsource>
 	<onlinemapsource id="4">

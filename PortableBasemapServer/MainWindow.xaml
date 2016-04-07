@@ -27,6 +27,8 @@
                 <MenuItem x:Name="miOnlineToMBTiles" Header="{DynamicResource miOnlineToMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miOnlineToMBTiles" />
                 <MenuItem x:Name="miBaiDuToMBTiles" Header="{DynamicResource miBaiduToMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miBaiduToMBTiles" />
                 <MenuItem x:Name="miOtherToMBTiles" Header="{DynamicResource miOtherToMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miOtherToMBTiles"/>
+                <MenuItem x:Name="miCorrectBaiduRawTiles" Header="{DynamicResource miCorrectBaiduRawTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miCorrectBaiduRawTiles"/>
+                <MenuItem x:Name="miMergeMBTiles" Header="{DynamicResource miMergeMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miMergeMBTiles"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menuAppearance}">
                 <MenuItem x:Name="miLanguage" Header="{DynamicResource miLanguage}" Command="{Binding CMDClickMenuItem}" CommandParameter="miLanguage" />
@@ -55,7 +57,7 @@
                             <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{DynamicResource tbDataSourcePath}" Padding="0,0,10,0" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" x:Name="textboxDataSourcePath" Text="{Binding ValueDataSourcePath,Mode=TwoWay}" Height="{Binding DataSourcePathTBHeight,Mode=OneWay}" IsEnabled="{Binding IsDataSourcePathTBEnabled,Mode=OneWay}" AcceptsReturn="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <TextBox Grid.Column="1" x:Name="textboxDataSourcePath" Text="{Binding ValueDataSourcePath,Mode=TwoWay}" Height="{Binding DataSourcePathTBHeight,Mode=OneWay}" IsEnabled="{Binding IsDataSourcePathTBEnabled,Mode=OneWay}" AcceptsReturn="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,1,0,-1">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="GotFocus">
                                     <i:InvokeCommandAction Command="{Binding CMDGotAndLostFocus}"  

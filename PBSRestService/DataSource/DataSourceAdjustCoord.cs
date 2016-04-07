@@ -30,6 +30,15 @@ namespace PBS.DataSource
             _sourceConn.Open();
             ConvertingStatus = new ConvertStatus();
         }
+        public DataSourceAdjustCoord(string inputFile, string outputFile)
+        {
+            ConvertingStatus = new ConvertStatus();
+            _sourceFile = inputFile;
+            _outputFile = outputFile;
+            _sourceConn = new SQLiteConnection("Data Source=" + inputFile);
+            _sourceConn.Open();
+            ConvertingStatus = new ConvertStatus();
+        }
         public string OutputFileName
         {
             get

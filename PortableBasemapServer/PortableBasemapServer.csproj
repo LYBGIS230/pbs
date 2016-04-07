@@ -126,6 +126,9 @@
     <Compile Include="Forms\ArcGISCacheToMBTiles.xaml.cs">
       <DependentUpon>ArcGISCacheToMBTiles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\BaiduCorrect.xaml.cs">
+      <DependentUpon>BaiduCorrect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BaiduTileLayer.cs" />
     <Compile Include="Forms\BaiduToMBTiles.xaml.cs">
       <DependentUpon>BaiduToMBTiles.xaml</DependentUpon>
@@ -166,6 +169,7 @@
     <Compile Include="ViewModels\VMConverOtherMapToMBTiles.cs" />
     <Compile Include="ViewModels\VMConvertBaiduToMBTiles.cs" />
     <Compile Include="ViewModels\VMConvertOnlineToMBTiles.cs" />
+    <Compile Include="ViewModels\VMCorrectBaidu.cs" />
     <Compile Include="ViewModels\VMMainView.cs" />
     <Page Include="Controls\ConvertingStatus.xaml">
       <SubType>Designer</SubType>
@@ -180,6 +184,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\ArcGISCacheToMBTiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\BaiduCorrect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -18,14 +18,13 @@ namespace PBS.APP
     /// <summary>
     /// BaiduCorrect.xaml 的交互逻辑
     /// </summary>
-    public partial class BaiduCorrect : Window
+    public partial class MBTilesMerge : Window
     {
-        public BaiduCorrect()
+        public MBTilesMerge()
         {
             InitializeComponent();
             VMConvertMBtiles vm = new VMConvertMBtiles();
             this.DataContext = vm;
-            
         }
     }
 }

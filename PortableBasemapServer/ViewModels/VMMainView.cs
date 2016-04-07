@@ -742,6 +742,18 @@ namespace PBS.APP.ViewModels
                 {
                 }
             }
+            else if (miHeader == "miMergeMBTiles")
+            {
+                try
+                {
+                    MBTilesMerge mergeWindow = new MBTilesMerge();
+                    mergeWindow.Owner = Application.Current.MainWindow;
+                    mergeWindow.Show();
+                }
+                catch (Exception)
+                {
+                }
+            }
             #endregion
             #region Appearance
             else if (miHeader == "miLanguage")

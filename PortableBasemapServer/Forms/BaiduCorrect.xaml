@@ -8,17 +8,16 @@
         xmlns:ViewModels="clr-namespace:PBS.APP.ViewModels"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="BaiduCorrect" Height="320" Width="640">
+        Title="百度切片包纠偏" Height="288" Width="640">
     <Grid>
-        <TextBox x:Name="srctextBox"  Text="{Binding DateToFetch, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="64,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="549"/>
-        <TextBox x:Name="targettextBox"  Text="{Binding FileToCorrect, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="64,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="549"/>
-        <Button x:Name="Start" Content="Start" HorizontalAlignment="Left" Margin="10,255,0,0" VerticalAlignment="Top" Width="75" Command="{Binding CMDClickStartButton}" CommandParameter="START"/>
-        <controls:ConvertingStatus Margin="10,83,0,38" x:Name="convertingStatus1" Visibility="Collapsed"/>
-        <Button x:Name="merge" Content="merge" HorizontalAlignment="Left" Margin="109,255,0,0" Command="{Binding CMDClickStartButton}" VerticalAlignment="Top" Width="75" CommandParameter="MERGE"/>
-        <Label x:Name="label" Content="合并源:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label1" Content="合并到:" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top"/>
-        <ProgressBar Value="{Binding TotalPercent,Mode=OneWay}" Margin="16,83,19,162" Height="40"/>
-        <Label x:Name="label2" Content="总进度:" HorizontalAlignment="Left" Margin="17,137,0,0" VerticalAlignment="Top" Width="62"/>
-        <Label x:Name="l_progress" Content="{Binding Percent}" HorizontalAlignment="Left" Margin="84,137,0,0" VerticalAlignment="Top" Width="506" Height="26"/>
+        <TextBox x:Name="srctextBox"  Text="{Binding DateToFetch, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="73,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540"/>
+        <TextBox x:Name="targettextBox"  Text="{Binding FileToCorrect, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="73,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540"/>
+        <Button x:Name="Start" Content="开始纠偏" HorizontalAlignment="Left" Margin="16,225,0,0" VerticalAlignment="Top" Width="75" Command="{Binding CMDClickStartButton}" CommandParameter="START"/>
+        <controls:ConvertingStatus Margin="10,83,0,38" x:Name="convertingStatus1" Visibility="Visible"/>
+        <Label x:Name="label" Content="待纠偏文件:" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label1" Content="输出到文件:" HorizontalAlignment="Left" Margin="0,45,0,0" VerticalAlignment="Top"/>
+        <!--ProgressBar Value="{Binding TotalPercent,Mode=OneWay}" Margin="16,83,19,0" VerticalAlignment="Top" Height="40"/-->
+        <Label x:Name="label2" Content="总进度:" HorizontalAlignment="Left" Margin="17,137,0,0" VerticalAlignment="Top" Width="62" Visibility="Collapsed"/>
+        <Label x:Name="l_progress" Content="{Binding Percent}" HorizontalAlignment="Left" Margin="84,137,0,0" VerticalAlignment="Top" Width="506" Height="26" Visibility="Collapsed"/>
     </Grid>
 </Window>

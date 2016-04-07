@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace PBS.APP.ViewModels
 {
-    public class VMCorrectBaidu : INotifyPropertyChanged
+    public class VMConvertMBtiles : INotifyPropertyChanged
     {
         public class MockDataSource
         {
@@ -31,13 +31,23 @@ namespace PBS.APP.ViewModels
                 NotifyPropertyChanged(p => p.TotalPercent);
             }
         }
+        private bool _buttonEnable = true;
+        public bool IsMergeButtonEnable
+        {
+            get { return _buttonEnable; }
+            set
+            {
+                _buttonEnable = value;
+                NotifyPropertyChanged(p => p.IsMergeButtonEnable);
+            }
+        }
 
         public string Percent
         {
             get { return _percent.ToString() + "%"; }
         }
-        public MockDataSource _dataSource;
-        public MockDataSource Datasource
+        public object _dataSource;
+        public object Datasource
         {
             get { return _dataSource; }
             set
@@ -47,7 +57,7 @@ namespace PBS.APP.ViewModels
             }
         }
         public ConvertStatus ConvertingStatus;
-        public VMCorrectBaidu()
+        public VMConvertMBtiles()
         {
             CMDClickStartButton = new DelegateCommand(StartButtonClicked);
         }
@@ -55,7 +65,7 @@ namespace PBS.APP.ViewModels
         public ICommand CMDClickStartButton { get; private set; }
         private string _FilePath;
         private string _srcData;
-        private void NotifyPropertyChanged<TValue>(Expression<Func<VMCorrectBaidu, TValue>> propertySelector)
+        private void NotifyPropertyChanged<TValue>(Expression<Func<VMConvertMBtiles, TValue>> propertySelector)
         {
             if (PropertyChanged == null)
                 return;
@@ -119,10 +129,12 @@ namespace PBS.APP.ViewModels
         }
         private void StartButtonClicked(object parameters)
         {
+
             string param = parameters.ToString();
             if (param == "START")
             {
                 DataSourceAdjustCoord transferSource = new DataSourceAdjustCoord(DateToFetch, FileToCorrect);
+                Datasource = transferSource;
                 ConvertingStatus = transferSource.ConvertingStatus;
                 NotifyPropertyChanged(p => p.ConvertingStatus);
                 (transferSource as DataSourceAdjustCoord).ConvertCompleted += (s1, a1) =>
@@ -130,10 +142,16 @@ namespace PBS.APP.ViewModels
                     string str1 = App.Current.FindResource("msgAdjustComplete").ToString();
                     MessageBox.Show(str1, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 };
-                transferSource.ConvertToMBTiles(FileToCorrect, "", "", "", new int[] { 18, 19 }, null, false);
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.DoWork += (s, a) =>
+                {
+                    transferSource.ConvertToMBTiles(FileToCorrect, "", "", "", new int[] { 18, 19 }, null, false);
+                };
+                bw.RunWorkerAsync();
             }
             else if (param == "MERGE")
             {
+                IsMergeButtonEnable = false;
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.RunWorkerCompleted += (s, a) =>
                 {
@@ -143,7 +161,7 @@ namespace PBS.APP.ViewModels
                 {
                     Datasource = new MockDataSource();
                     ConvertingStatus = new ConvertStatus();
-                    Datasource.ConvertingStatus = ConvertingStatus;
+                    ((MockDataSource)Datasource).ConvertingStatus = ConvertingStatus;
                     NotifyPropertyChanged(p => p.ConvertingStatus);
 
                     List<int> levels = new List<int>();
@@ -237,8 +255,6 @@ namespace PBS.APP.ViewModels
                         writeCommand.ExecuteNonQuery();
 
                         writeTran.Commit();
-                        //writeCommand.CommandText = "vacuum";
-                        //writeCommand.ExecuteNonQuery();
                         writeTran.Dispose();
                     }
                     ConvertingStatus.IsInProgress = false;

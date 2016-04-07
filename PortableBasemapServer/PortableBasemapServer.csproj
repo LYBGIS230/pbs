@@ -153,6 +153,9 @@
     <Compile Include="Forms\DebugWindow.xaml.cs">
       <DependentUpon>DebugWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MBTilesMerge.xaml.cs">
+      <DependentUpon>MBTilesMerge.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\OnlineToMBTiles.xaml.cs">
       <DependentUpon>OnlineToMBTiles.xaml</DependentUpon>
     </Compile>
@@ -169,7 +172,7 @@
     <Compile Include="ViewModels\VMConverOtherMapToMBTiles.cs" />
     <Compile Include="ViewModels\VMConvertBaiduToMBTiles.cs" />
     <Compile Include="ViewModels\VMConvertOnlineToMBTiles.cs" />
-    <Compile Include="ViewModels\VMCorrectBaidu.cs" />
+    <Compile Include="ViewModels\VMConvertMBtiles.cs" />
     <Compile Include="ViewModels\VMMainView.cs" />
     <Page Include="Controls\ConvertingStatus.xaml">
       <SubType>Designer</SubType>
@@ -214,6 +217,10 @@
     <Page Include="Forms\DebugWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\MBTilesMerge.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Forms\OnlineToMBTiles.xaml">
       <SubType>Designer</SubType>

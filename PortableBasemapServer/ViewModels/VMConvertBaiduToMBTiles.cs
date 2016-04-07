@@ -190,7 +190,7 @@ namespace PBS.APP.ViewModels
             try
             {
                 string version = null;
-                if (SelectedDatasourceType == "BaiduSate")
+                if (SelectedDatasourceType == "BaiduSate" || SelectedDatasourceType == "BaiduBase")
                 {
                     version = "009";
                 }

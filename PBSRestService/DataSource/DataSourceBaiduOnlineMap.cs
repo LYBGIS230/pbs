@@ -174,7 +174,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
                 for (int bCol = startBundle.Col; bCol <= endBundle.Col; bCol++)
                 {
                     Bundle b = new Bundle(bundleSize, level, bRow, bCol, TilingScheme);
-                    if (_downloadGeometry is Polygon)
+                    /*if (_downloadGeometry is Polygon)
                     {
                         bool bPolygonTouchesWithBundle = false;
                         Polygon polygon = _downloadGeometry as Polygon;
@@ -186,7 +186,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
                             bPolygonTouchesWithBundle = true;
                         if (!bPolygonTouchesWithBundle)
                             continue;
-                    }
+                    }*/
                     allBundles.Add(b);
                 }
             }
@@ -555,9 +555,26 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
         }
         protected override void DoConvertToMBTiles(string outputPath, string name, string description, string attribution, int[] levels, Geometry geometry, bool doCompact)
         {
-            Util.Envelope initial = geometry as Envelope;
-            Util.Point pLeftTop = Utility.GeographicToWebMercator(new Util.Point(initial.XMin, initial.YMax));
-            Util.Point pRightBottom = Utility.GeographicToWebMercator(new Util.Point(initial.XMax, initial.YMin));
+            Util.Envelope initial;
+            Point pLeftTop;
+            Point pRightBottom;
+            if (geometry is Envelope)
+            {
+                initial = geometry as Envelope;
+                pLeftTop = Utility.GeographicToWebMercator(new Util.Point(initial.XMin, initial.YMax));
+                pRightBottom = Utility.GeographicToWebMercator(new Util.Point(initial.XMax, initial.YMin));
+            }
+            else
+            {
+                Polygon temp = geometry as Polygon;
+                pLeftTop = new Util.Point(temp.Extent.XMin, temp.Extent.YMax);
+                pRightBottom = new Util.Point(temp.Extent.XMax, temp.Extent.YMin);
+                Point GPS_pLeftTop = Utility.WebMercatorToGeographic(pLeftTop);
+                Point GPS_pRightBottom = Utility.WebMercatorToGeographic(pRightBottom);
+                initial = new Envelope(GPS_pLeftTop.X, GPS_pRightBottom.Y, GPS_pRightBottom.X, GPS_pLeftTop.Y);
+            }
+            
+            
             Envelope downloadExtentMercator = new Envelope(pLeftTop.X, pRightBottom.Y, pRightBottom.X, pLeftTop.Y);
 
             _outputFile = outputPath;
@@ -565,10 +582,10 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
             _convertingStatus.IsInProgress = true;
             try
             {
-                CreateMBTilesFileAndWriteMetaData(outputPath, name, description, attribution, geometry);
+                CreateMBTilesFileAndWriteMetaData(outputPath, name, description, attribution, initial);
                 if (autoCorrectCoord)
                 {
-                    CreateCCMBTilesFile(outputPath, name, description, attribution, geometry);
+                    CreateCCMBTilesFile(outputPath, name, description, attribution, initial);
                 }
                 _outputconn = new SQLiteConnection("Data source = " + base._outputFile);
                 _outputconn.Open();
@@ -580,7 +597,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
                 for (int i = 0; i < levels.Length; i++)
                 {
                     int level = TilingScheme.LODs[levels[i]].LevelID;
-                    RCRange range = BaiDuMapManager.inst.getBaiduRCRangeFromGPS(geometry as Envelope, level);
+                    RCRange range = BaiDuMapManager.inst.getBaiduRCRangeFromGPS(initial, level);
                     int startTileRow = range.MinRow;
                     int startTileCol = range.MinCol;
                     int endTileRow = range.MaxRow;

@@ -409,6 +409,11 @@ Built using the  <a href=""http://resources.esri.com/arcgisserver/apis/javascrip
             WebOperationContext.Current.OutgoingResponse.SetStatusAsNotFound("tile not exists");
             return null;
         }
+        public Stream GenerateOSMTile(string serviceName, string level, string row, string col)
+        {
+            return GenerateArcGISTile(serviceName, level, row, col);
+        }
+
         public Stream GenerateArcGISTile(string serviceName, string level, string row, string col)
         {
             #region loginfo

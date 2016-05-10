@@ -66,6 +66,10 @@ namespace PBS.Service
         Stream GenerateArcGISTile(string serviceName, string level, string row, string col);
 
         [OperationContract]
+        [WebGet(UriTemplate = "/KGIS/rest/services/{servicename}/OSMServer/{level}/{col}/{row}", BodyStyle = WebMessageBodyStyle.Bare)]
+        Stream GenerateOSMTile(string serviceName, string level, string row, string col);
+
+        [OperationContract]
         [WebGet(UriTemplate = "/KGIS/rest/services/{servicename}/MapServer/tile/{level}/{row}/{col}?type={type}&t={time}", BodyStyle = WebMessageBodyStyle.Bare)]
         Stream GenerateBaiduTile(string serviceName, string level, string row, string col, string type, string time);
 

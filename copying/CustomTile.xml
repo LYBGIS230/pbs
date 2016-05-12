@@ -29,7 +29,7 @@
       <Lod  level="18" resolution="1" scale="3779.52755905512"/>
       <Lod  level="19" resolution="0.5" scale="1889.76377952756"/>
     </Lods>
-    <InitialExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
+    <InitialExtent xmin="121.3848" ymin="31.1701" xmax="121.3941" ymax="31.1773"/>
     <FullExtent xmin="-20037508.3427892" ymin="-20037508.3427892" xmax="20037508.3427892" ymax="20037508.3427892"/>
     <DownLoadExtent xmin="121.405" ymin="31.353" xmax="121.513" ymax="31.417"/>
     <MainTypeUrlConfig path="BaiduMaps.xml"/>

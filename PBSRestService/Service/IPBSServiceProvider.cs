@@ -26,6 +26,7 @@ namespace PBS.Service
         [WebGet(UriTemplate = "/crossdomain.xml", BodyStyle = WebMessageBodyStyle.Bare)]
         Stream CrossDomainFile();
 
+        #region TileService
         [OperationContract(Name = "GenerateServerInfo")]
         [WebGet(UriTemplate = "/KGIS/rest/info?f={f}&callback={callback}", BodyStyle = WebMessageBodyStyle.Bare)]
         Stream GenerateArcGISServerInfo(string f, string callback);
@@ -83,6 +84,16 @@ namespace PBS.Service
         [OperationContract]
         [WebGet(UriTemplate = "/KGIS/rest/services/{servicename}/MapServer/version?type={type}&s={startTimeStamp}&e={endTimeStamp}", BodyStyle = WebMessageBodyStyle.Bare)]
         Stream GetVersions(string serviceName, string type, string startTimeStamp, string endTimeStamp);
+        #endregion
+        #region StreetSide
+        [OperationContract(Name = "spotdata")]
+        [WebGet(UriTemplate = "/KGIS/StreetSide/QuerySpots?area={areajson}", BodyStyle = WebMessageBodyStyle.Bare)]
+        Stream QueryStreetSpots(string areajson);
+
+        [OperationContract(Name = "spotresource")]
+        [WebGet(UriTemplate = "/KGIS/StreetSide/{fullfileName}?pid={paramStr}", BodyStyle = WebMessageBodyStyle.Bare)]
+        Stream GetFile(string fullfileName, string paramStr);
+        #endregion
 
         #region WMTS
         /// <summary>

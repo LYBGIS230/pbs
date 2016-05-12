@@ -149,6 +149,7 @@ namespace PBS.Service
                     case "BaiduHot":
                     case "BaiduSate":
                     case "BaiduTraffic":
+                    case "BaiduPanoMark":
                         DataSource = new DataSourceBaiDuTileProxy("BaiDuOnline")
                         {
                             IsOnlineMap = true,

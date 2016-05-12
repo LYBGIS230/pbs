@@ -438,6 +438,10 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
                 {
                     uri = string.Format(baseUrl, level, col, row, Version, subdomain);
                 }
+                else if ("BaiduPanoMark" == _mapName)
+                {
+                    uri = string.Format(baseUrl, Version, col, row, level);
+                }
                 TileLoadEventArgs tileLEA = new TileLoadEventArgs()
                 {
                     Level = level,

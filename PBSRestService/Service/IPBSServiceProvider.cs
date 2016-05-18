@@ -87,7 +87,7 @@ namespace PBS.Service
         #endregion
         #region StreetSide
         [OperationContract(Name = "spotdata")]
-        [WebGet(UriTemplate = "/KGIS/StreetSide/QuerySpots?area={areajson}", BodyStyle = WebMessageBodyStyle.Bare)]
+        [WebGet(UriTemplate = "/KGIS/StreetSide/QuerySpots?loc={areajson}", BodyStyle = WebMessageBodyStyle.Bare)]
         Stream QueryStreetSpots(string areajson);
 
         [OperationContract(Name = "spotresource")]

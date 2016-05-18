@@ -28,6 +28,7 @@ namespace PBS.Service
     {
         public Dictionary<string, PBSService> Services { get; set; }
         public const string PBSName = "Portable Basemap Server";
+        private string StreetMapMode = "ONLINE";
 
         public PBSServiceProvider()
         {
@@ -1334,14 +1335,29 @@ Invalid version!
         }
         #endregion        
 
-        public Stream QueryStreetSpots(string areajson)
+        public Stream QueryStreetSpots(string latlngjson)
         {
             byte[] result = null;
-            WebOperationContext.Current.OutgoingResponse.ContentType = "application/json";
-            result = Task.Factory.StartNew<byte[]>(delegate ()
+            if (latlngjson != null)
             {
-                return System.Text.Encoding.UTF8.GetBytes((new DataSourceStreetSide()).GetSpotsByArea(null));
-            }).Result;
+                string[] parts = latlngjson.Split(',');
+
+                WebOperationContext.Current.OutgoingResponse.ContentType = "application/json";
+                if ("ONLINE".Equals(StreetMapMode))
+                {
+                    result = Task.Factory.StartNew<byte[]>(delegate ()
+                    {
+                        return System.Text.Encoding.UTF8.GetBytes(DataSourceStreetSide.GetSpotIdOnline(parts[0], parts[1]));
+                    }).Result;
+                }
+                else
+                {
+                    result = Task.Factory.StartNew<byte[]>(delegate ()
+                    {
+                        return System.Text.Encoding.UTF8.GetBytes(DataSourceStreetSide.GetSpotId(parts[0], parts[1]));
+                    }).Result;
+                }
+            }
             return new MemoryStream(result);
         }
 
@@ -1351,6 +1367,18 @@ Invalid version!
             if (fullfileName.Contains("jpeg"))
             {
                 WebOperationContext.Current.OutgoingResponse.ContentType = "image/jpeg";
+                if ("ONLINE".Equals(StreetMapMode))
+                {
+                    result = Task.Factory.StartNew<byte[]>(delegate ()
+                    {
+                        string[] parts = fullfileName.Split('_');
+                        MultiPicDownloadDispatcher<DownloadWorker> d = DataSourceStreetSide.getAttendant();
+                        d.setPicInfo(parts[1], 3);
+                        d.start();
+                        return d.getResult();
+                    }).Result;
+                    return new MemoryStream(result);
+                }
             }
             else if (fullfileName.Contains("html"))
             {

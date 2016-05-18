@@ -102,6 +102,11 @@ namespace PBS.Util
                     "Log@LineNum:" + lineNumber);
         }
 
+        public static void LogSimple(LogLevel level, string desc = null)
+        {
+            innerLog(level, "Thread: " + Thread.CurrentThread.ManagedThreadId + ",  " + desc);
+        }
+
         private static void innerLog(LogLevel l,string message)
         {
             switch (l)

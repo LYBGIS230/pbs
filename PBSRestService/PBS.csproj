@@ -106,6 +106,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataSource\IFormatConverter.cs" />
+    <Compile Include="DataSource\MultiPartedHTTPGetter.cs" />
     <Compile Include="Service\BaiDuMapManager.cs" />
     <Compile Include="DataSource\ImageConvertor.cs" />
     <Compile Include="Service\BdCoodOffsetProvider.cs" />

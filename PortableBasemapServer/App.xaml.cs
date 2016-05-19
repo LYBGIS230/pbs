@@ -45,6 +45,11 @@ namespace PBS.APP
                 BaiDuMapManager.inst.roundInterval = long.Parse(AppUtility.ReadConfig("RoundInterval", "300000"));
                 BaiDuMapManager.inst.RunMode = AppUtility.ReadConfig("RunningMode", "OFFLINE");
                 BaiDuMapManager.inst.bundleSize = int.Parse(AppUtility.ReadConfig("BundleSize", "16"));
+                BaiDuMapManager.inst.streetudt = AppUtility.ReadConfig("StreetUDT", "20160330");
+                if (!Directory.Exists("site/" + "Pics/" +BaiDuMapManager.inst.streetudt))
+                {
+                    Directory.CreateDirectory("site/" + "Pics/" + BaiDuMapManager.inst.streetudt);
+                }
             }
             catch (Exception ex)
             {

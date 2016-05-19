@@ -44,6 +44,7 @@ namespace PBS.Service
         public static BaiDuMapManager inst;
         public int maxThreadCount = 0;
         public int bundleSize = 0;
+        public string streetudt = "";
         public int startVersion = 0;
         public long roundInterval = 0;
         public CacheVersionProvider cp;

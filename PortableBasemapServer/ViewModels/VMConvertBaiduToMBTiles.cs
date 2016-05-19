@@ -196,7 +196,7 @@ namespace PBS.APP.ViewModels
                 }
                 else if(SelectedDatasourceType == "BaiduPanoMark")
                 {
-                    version = "20160330";
+                    version = BaiDuMapManager.inst.streetudt;
                 }
                 else{
                     version = BaiDuMapManager.inst.cp.getLastVersion();

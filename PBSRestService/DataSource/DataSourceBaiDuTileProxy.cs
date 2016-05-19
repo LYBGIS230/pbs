@@ -204,7 +204,7 @@ namespace PBS.DataSource
                 else if ("BaiduPanoMark" == _mapName)
                 {
                     string subdomain = _subDomains[Math.Abs(level + col + row) % 3];
-                    uri = string.Format(baseUrls["BaiduPanoMark"], "20160330", col, row, level);
+                    uri = string.Format(baseUrls["BaiduPanoMark"], BaiDuMapManager.inst.streetudt, col, row, level);
                     type = "street";
                 }
             }

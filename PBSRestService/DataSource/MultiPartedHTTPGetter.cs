@@ -1,4 +1,5 @@
 ﻿using PBS.DataSource;
+using PBS.Service;
 using PBS.Util;
 using System;
 using System.Collections.Generic;
@@ -316,6 +317,7 @@ namespace PBS.DataSource
         }
         private string panOid;
         private int zoom;
+        private string udt = BaiDuMapManager.inst.streetudt;
         byte[][] resultBuffer;
         int[] partCounts = new int[] { 1, 2, 8, 32, 128 };
         bool[] indicators;
@@ -364,7 +366,7 @@ namespace PBS.DataSource
                                 if (!indicators[i])
                                 {
                                     int[] p = decodeIndex(i, zoom);
-                                    RunJob(panOid + ",20160330," + zoom + "," + p[1] + "," + p[0]);
+                                    RunJob(panOid + "," + udt + "," + zoom + "," + p[1] + "," + p[0]);
                                 }
                             }
                         });
@@ -431,48 +433,6 @@ namespace PBS.DataSource
             }
             return null;
         }
-        /*private void checkAndRecover()
-        {
-            bool needRecover = false;
-            int len = indicators.Length;
-            for (int i = 0; i < len; i++)
-            {
-                if (!indicators[i])
-                {
-                    needRecover = true;
-                    int[] p = decodeIndex(i, zoom);
-                    RunJob(panOid + ",20160330," + zoom + "," + p[1] + "," + p[0]);
-                }
-            }
-            if (needRecover)
-            {
-                _timer = new System.Timers.Timer(1500);
-                secondEclipsed = 0;
-                _timer.Elapsed += (s, a) =>
-                {
-                    if (secondEclipsed < 2)
-                    {
-                        for (int i = 0; i < len; i++)
-                        {
-                            if (!indicators[i])
-                            {
-                                int[] p = decodeIndex(i, zoom);
-                                RunJob(panOid + ",20160330," + zoom + "," + p[1] + "," + p[0]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _timer.Stop();
-                        finalPic = new byte[0];
-                        manlEvent.Set();
-                        isIdle = true;
-                    }
-                    secondEclipsed += 1.5;
-                };
-                _timer.Start();
-            }
-        }*/
         public override void Run()
         {
             isIdle = false;
@@ -481,7 +441,7 @@ namespace PBS.DataSource
             {
                 for (int col = 0; col < System.Math.Pow(2.0, zoom); col++)
                 {
-                    RunJob(panOid + ",20160330," + zoom + "," + col + "," + row);
+                    RunJob(panOid + "," + udt + "," + zoom + "," + col + "," + row);
                 }
             }
             secondEclipsed = 0;
@@ -527,7 +487,6 @@ namespace PBS.DataSource
             string baseUrl = "http://pcsv1.map.bdimg.com/?qt=pdata&sid={0}&pos={1}_{2}&z={4}&udt={3}";
             string url = string.Format(baseUrl, panOid, row, col, udt, zoom + 1);
             byte[] picBytes = HttpGetTileBytes(url);
-            Utility.LogSimple(LogLevel.Debug, "Downloaded called: " + row + ", " + panOid  + ", " + col);
             if (picBytes == null) return null;
             return new PicResult()
             {

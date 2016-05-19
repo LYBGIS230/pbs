@@ -841,7 +841,8 @@ Invalid version!
         }
         private void SetEtag(string level, string row, string col)
         {
-            WebOperationContext.Current.OutgoingResponse.Headers.Add(HttpResponseHeader.Expires, DateTime.Now.AddHours(24).ToUniversalTime().ToString("r")); string oriEtag = level + row + col;
+            WebOperationContext.Current.OutgoingResponse.Headers.Add(HttpResponseHeader.Expires, DateTime.Now.AddHours(24).ToUniversalTime().ToString("r"));
+            string oriEtag = level + row + col;
             string etag = Convert.ToBase64String(Encoding.UTF8.GetBytes(oriEtag));
             WebOperationContext.Current.OutgoingResponse.SetETag(etag);
         }
@@ -1360,50 +1361,98 @@ Invalid version!
             }
             return new MemoryStream(result);
         }
-
-        public Stream GetFile(string fullfileName, string paramStr)
+        private bool EtagPass(string rightEtag)
         {
+            bool result = false;
+            if (WebOperationContext.Current.IncomingRequest.Headers[HttpRequestHeader.IfNoneMatch] != null)
+            {
+                string etag = WebOperationContext.Current.IncomingRequest.Headers[HttpRequestHeader.IfNoneMatch].Split(new string[] { "\"" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                string oriEtag = Encoding.UTF8.GetString(Convert.FromBase64String(etag));
+                if (oriEtag == rightEtag)
+                {
+                    result = true;
+                    WebOperationContext.Current.OutgoingResponse.SuppressEntityBody = true;
+                    WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NotModified;
+                }
+                //return new MemoryStream(new byte[0]);
+            }
+            return result;
+        }
+
+        private void setEtag(string toSet)
+        {
+            WebOperationContext.Current.OutgoingResponse.Headers.Add(HttpResponseHeader.Expires, DateTime.Now.AddHours(24).ToUniversalTime().ToString("r"));
+            string etag = Convert.ToBase64String(Encoding.UTF8.GetBytes(toSet));
+            WebOperationContext.Current.OutgoingResponse.SetETag(etag);
+        }
+        public Stream GetFile(string fullfileName, string paramStr, string level)
+        {
+            string z = level == null ? "4": level;
             byte[] result = null;
-            if (fullfileName.Contains("jpeg"))
+            if (EtagPass("v1"))
             {
-                WebOperationContext.Current.OutgoingResponse.ContentType = "image/jpeg";
-                if ("ONLINE".Equals(StreetMapMode))
+                return new MemoryStream(new byte[0]);
+            }
+            else
+            {
+                setEtag("v1");
+                if (fullfileName.Contains("jpeg"))
                 {
-                    result = Task.Factory.StartNew<byte[]>(delegate ()
+                    WebOperationContext.Current.OutgoingResponse.ContentType = "image/jpeg";
+                    if ("ONLINE".Equals(StreetMapMode))
                     {
-                        string[] parts = fullfileName.Split('_');
-                        MultiPicDownloadDispatcher<DownloadWorker> d = DataSourceStreetSide.getAttendant();
-                        d.setPicInfo(parts[1], 3);
-                        d.start();
-                        return d.getResult();
-                    }).Result;
-                    return new MemoryStream(result);
+                        string path = "site/" + fullfileName.Replace('_', '/');
+                        if (!File.Exists(path))
+                        {
+                            string[] parts = fullfileName.Split('_');
+                            result = Task.Factory.StartNew<byte[]>(delegate ()
+                            {
+                                MultiPicDownloadDispatcher<DownloadWorker> d = DataSourceStreetSide.getAttendant();
+                                d.setPicInfo(parts[2], int.Parse(parts[3].Substring(0, parts[3].Length - 5)) - 1);
+                                d.start();
+                                return d.getResult();
+                            }).Result;
+                            if(result.Length > 0)
+                            {
+                                Thread saveThread = new Thread(() =>
+                                {
+                                    if (!Directory.Exists("site/" + "Pics/" + BaiDuMapManager.inst.streetudt + "/" + parts[2]))
+                                    {
+                                        Directory.CreateDirectory("site/" +  "Pics/" + BaiDuMapManager.inst.streetudt + "/" + parts[2]);
+                                    }
+                                    File.WriteAllBytes(path, result);
+                                });
+                                saveThread.Start();
+                            }
+                            return new MemoryStream(result);
+                        }
+                    }
                 }
-            }
-            else if (fullfileName.Contains("html"))
-            {
-                WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-                if ("Panoroma.html".Equals(fullfileName))
+                else if (fullfileName.Contains("html"))
                 {
-                    return new MemoryStream(System.Text.Encoding.UTF8.GetBytes(DataSourceStreetSide.GetPage(paramStr)));
+                    WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+                    if ("Panoroma.html".Equals(fullfileName))
+                    {
+                        return new MemoryStream(System.Text.Encoding.UTF8.GetBytes(DataSourceStreetSide.GetPage(paramStr, z)));
+                    }
                 }
+                else if (fullfileName.Contains("swf"))
+                {
+                    WebOperationContext.Current.OutgoingResponse.ContentType = "application/x-shockwave-flash";
+                }
+                result = Task.Factory.StartNew<byte[]>(delegate ()
+                {
+                    fullfileName = fullfileName.Replace('_', '/');
+                    FileStream fs = new FileStream("site/" + fullfileName, FileMode.Open);
+                    int len = (int)fs.Length;
+                    BinaryReader br = new BinaryReader(fs);
+                    byte[] temp = br.ReadBytes(len);
+                    br.Close();
+                    fs.Close();
+                    return temp;
+                }).Result;
+                return new MemoryStream(result);
             }
-            else if (fullfileName.Contains("swf"))
-            {
-                WebOperationContext.Current.OutgoingResponse.ContentType = "application/x-shockwave-flash";
-            }
-            result = Task.Factory.StartNew<byte[]>(delegate ()
-            {
-                fullfileName = fullfileName.Replace('_', '/');
-                FileStream fs = new FileStream("site/" + fullfileName, FileMode.Open);
-                int len = (int)fs.Length;
-                BinaryReader br = new BinaryReader(fs);
-                byte[] temp = br.ReadBytes(len);
-                br.Close();
-                fs.Close();
-                return temp;
-            }).Result;
-            return new MemoryStream(result);
         }
 
     }

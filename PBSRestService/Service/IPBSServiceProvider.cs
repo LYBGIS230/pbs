@@ -91,8 +91,8 @@ namespace PBS.Service
         Stream QueryStreetSpots(string areajson);
 
         [OperationContract(Name = "spotresource")]
-        [WebGet(UriTemplate = "/KGIS/StreetSide/{fullfileName}?pid={paramStr}", BodyStyle = WebMessageBodyStyle.Bare)]
-        Stream GetFile(string fullfileName, string paramStr);
+        [WebGet(UriTemplate = "/KGIS/StreetSide/{fullfileName}?pid={paramStr}&level={level}", BodyStyle = WebMessageBodyStyle.Bare)]
+        Stream GetFile(string fullfileName, string paramStr, string level);
         #endregion
 
         #region WMTS

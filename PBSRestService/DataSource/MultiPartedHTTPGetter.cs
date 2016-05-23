@@ -124,8 +124,8 @@ namespace PBS.DataSource
         private int currentIndex = 0; //currently inquiryed thread number
         int childCount = 5;
         private EventWaitHandle[] _download;
-        private int jobCount;
-        private int finishedJobCount;
+        protected int jobCount;
+        protected int finishedJobCount;
         protected bool allJobArrived;
         string[] _messages;
         WorkerBase[] downloaders;
@@ -184,17 +184,17 @@ namespace PBS.DataSource
         {
             downloaderStatus[id] = status;
         }
-        private void afterJobFinished(object param)
+        protected virtual void afterJobFinished(object param)
         {
             if (param != null)
             {
+                EnqueueTask(param);
+                onWorkFinished(param);
                 finishedJobCount++;
                 if (jobCount == finishedJobCount)
                 {
                     allJobArrived = true;
                 }
-                EnqueueTask(param);
-                onWorkFinished(param);
             }
         }
         public abstract void onWorkFinished(object param);
@@ -302,8 +302,8 @@ namespace PBS.DataSource
     }
     public class MultiPicDownloadDispatcher<T> : Dispatcher<T> where T : WorkerBase
     {
-        private System.Timers.Timer _timer = new System.Timers.Timer(1500);
-        private double secondEclipsed = 0.0;
+        private System.Timers.Timer _timer = new System.Timers.Timer(500);
+        private int secondEclipsed = 0;
 
         public bool isIdle = true;
         private static MultiPicDownloadDispatcher<T> _inst;
@@ -340,7 +340,10 @@ namespace PBS.DataSource
                     for (int panangle = 0; panangle < System.Math.Pow(2.0, zoom); panangle++)
                     {
                         picBytes = resultBuffer[tiltangle * (int)Math.Pow(2, zoom) + panangle];
-                        if (picBytes == null) continue;
+                        if (picBytes == null) {
+                            //Utility.LogSimple(LogLevel.Debug, "Tile Not loaded, value null, Params: " + panOid + ", " + (zoom + 1) + "_" + tiltangle + "_" + panangle);
+                            continue;
+                        };
                         part = new Bitmap(new MemoryStream(picBytes));
                         destPic.DrawImage(part, panangle * 512, tiltangle * 512);
                         part.Dispose();
@@ -349,57 +352,81 @@ namespace PBS.DataSource
                 map.Save(output, System.Drawing.Imaging.ImageFormat.Jpeg);
                 finalPic = output.ToArray();
                 manlEvent.Set();
-                Utility.LogSimple(LogLevel.Debug,  "AllJobFinished and set called");
+                Utility.LogSimple(LogLevel.Debug, "AllJobFinished and set called: " + panOid + ", " + (zoom + 1));
             };
             _timer.Elapsed += (s, a) =>
             {
+                List<int> recoverPoints = new List<int>() { 10, 14, 17, 19, 20 };
                 int len = indicators.Length;
-                secondEclipsed += 1.5;
-                if (secondEclipsed < 3.5)
+                secondEclipsed += 1;
+                if (secondEclipsed < 21)
                 {
-                    if (!allJobArrived)
+                    if (recoverPoints.Contains(secondEclipsed))
                     {
-                        Thread recoverThread = new Thread(() =>
+                        if (!allJobArrived)
                         {
-                            for (int i = 0; i < len; i++)
+                            Thread recoverThread = new Thread(() =>
                             {
-                                if (!indicators[i])
+                                for (int i = 0; i < len; i++)
                                 {
-                                    int[] p = decodeIndex(i, zoom);
-                                    RunJob(panOid + "," + udt + "," + zoom + "," + p[1] + "," + p[0]);
+                                    if (!indicators[i])
+                                    {
+                                        int[] p = decodeIndex(i, zoom);
+                                        RunJob(panOid + "," + udt + "," + zoom + "," + p[1] + "," + p[0]);
+                                        Utility.LogSimple(LogLevel.Debug, "Tile Recovered, Params: " + panOid + ", " + (zoom + 1) + "_" + p[0] + "_" + p[1]);
                                 }
-                            }
-                        });
-                        recoverThread.Start();
-                    }
-                    else
-                    {
-                        _timer.Stop();
-                        if (secondEclipsed == 1.5)
-                        {
-                            Utility.LogSimple(LogLevel.Debug, "OK, no need to recover");
+                                }
+                            });
+                            recoverThread.Start();
                         }
                         else
                         {
-                            Utility.LogSimple(LogLevel.Debug, "Recoverred in time and timer stop called");
+                            _timer.Stop();
+                            if (secondEclipsed == 1.5)
+                            {
+                                //Utility.LogSimple(LogLevel.Debug, "OK, no need to recover: " + panOid + ", " + (zoom + 1));
+                            }
+                            else
+                            {
+                                //Utility.LogSimple(LogLevel.Debug, "Recoverred in time and timer stop called: " + panOid + ", " + (zoom + 1));
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
                 else
                 {
                     _timer.Stop();
-                    Utility.LogSimple(LogLevel.Debug, "Time out and timer stop called");
+                    //Utility.LogSimple(LogLevel.Debug, "Time out and timer stop called: " + panOid + ", " + (zoom + 1));
                     if (!isIdle)
                     {
                         isIdle = true;
                         setTotalJobCount(9999);
                         finalPic = new byte[0];
                         manlEvent.Set();
-                        Utility.LogSimple(LogLevel.Debug, "Time out and set called");
+                        //Utility.LogSimple(LogLevel.Debug, "Time out and set called: " + panOid + ", " + (zoom + 1));
                     }
                 }
             };
+        }
+        protected override void afterJobFinished(object param)
+        {
+            PicResult r = param as PicResult;
+            if (indicators[r.row * (int)Math.Pow(2, r.zoom) + r.col])
+            {
+                Utility.LogSimple(LogLevel.Debug, "Repeated Tile abandoned, Params: " + panOid + ", " + (zoom + 1) + "_" + r.row + "_" + r.col);
+                return;
+            }
+            if (param != null)
+            {
+                EnqueueTask(param);
+                onWorkFinished(param);
+                finishedJobCount++;
+                if (jobCount == finishedJobCount)
+                {
+                    allJobArrived = true;
+                }
+            }
         }
         public void setPicInfo(string pid, int level)
         {
@@ -428,6 +455,7 @@ namespace PBS.DataSource
             PicResult r = product as PicResult;
             if (r.pic != null)
             {
+                //Utility.LogSimple(LogLevel.Debug, "Buffer setted, Params: " + panOid + ", " + (zoom + 1) + "_" + r.row + "_" + r.col + ", " + r.pic.Length);
                 resultBuffer[r.row * (int)Math.Pow(2, r.zoom) + r.col] = r.pic;
                 indicators[r.row * (int)Math.Pow(2, r.zoom) + r.col] = true;
             }
@@ -436,6 +464,7 @@ namespace PBS.DataSource
         public override void Run()
         {
             isIdle = false;
+            Utility.LogSimple(LogLevel.Debug, "Start Download Spot Pic, Params: " + panOid + ", " + (zoom + 1));
             setTotalJobCount(indicators.Length);
             for (int row = 0; row < System.Math.Pow(2.0, zoom - 1); row++)
             {
@@ -446,7 +475,7 @@ namespace PBS.DataSource
             }
             secondEclipsed = 0;
             _timer.Start();
-            Utility.LogSimple(LogLevel.Debug, "Timer started");
+            //Utility.LogSimple(LogLevel.Debug, "Timer started");
         }
         public byte[] getResult()
         {
@@ -487,7 +516,9 @@ namespace PBS.DataSource
             string baseUrl = "http://pcsv1.map.bdimg.com/?qt=pdata&sid={0}&pos={1}_{2}&z={4}&udt={3}";
             string url = string.Format(baseUrl, panOid, row, col, udt, zoom + 1);
             byte[] picBytes = HttpGetTileBytes(url);
-            if (picBytes == null) return null;
+            //Utility.LogSimple(LogLevel.Debug, "Tile downloaded, Params: " + panOid + ", " + (zoom + 1) + "_" + row + "_" + col + ", size:" + picBytes.Length);
+            if (picBytes == null || picBytes.Length < 1800) return null;
+            //百度的最小512*512图片大小1819
             return new PicResult()
             {
                 pic = picBytes,

@@ -7,37 +7,43 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Web.Script.Serialization;
 
 namespace PBS.DataSource
 {
     public class DataSourceStreetSide
     {
-        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPool;
-        public static MultiPicDownloadDispatcher<DownloadWorker> getAttendant()
+        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel3;
+        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel4;
+        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel5;
+        public static MultiPicDownloadDispatcher<DownloadWorker> getAttendant(int level)
         {
-            if(servPool == null)
+            List<MultiPicDownloadDispatcher<DownloadWorker>>[] entries = new List<MultiPicDownloadDispatcher<DownloadWorker>>[] { servPoolLevel3, servPoolLevel4, servPoolLevel5 };
+            int[] threadNumbers = new int[] { 8, 32, 64 };
+            List<MultiPicDownloadDispatcher<DownloadWorker>> entry = entries[level - 3];
+            if (entry == null)
             {
-                MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(16);
-                servPool = new List<MultiPicDownloadDispatcher<DownloadWorker>>();
-                servPool.Add(d);
+                MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
+                entry = new List<MultiPicDownloadDispatcher<DownloadWorker>>();
+                entry.Add(d);
                 return d;
             }
-            int count = servPool.Count;
+            int count = entry.Count;
             while (true)
             {
                 for (int i = 0; i < count; i++)
                 {
-                    if (servPool[i].isIdle)
+                    if (entry[i].isIdle)
                     {
                         Utility.LogSimple(LogLevel.Debug, "Total " + count + " dispatcher, and choosed " + i);
-                        return servPool[i];
+                        return entry[i];
                     }
                 }
                 if (count < 6)
                 {
-                    MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(16);
-                    servPool.Add(d);
+                    MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
+                    entry.Add(d);
                     Utility.LogSimple(LogLevel.Debug, "new dispatcher added");
                     return d;
                 }
@@ -170,6 +176,32 @@ namespace PBS.DataSource
                     result = result + "true,";
                     LatLng correctLoc = BdCoodOffsetProvider.getInstance().BaiduMercator2StandardMercator(new LatLng(((double)info.content.y) / 100.0, ((double)info.content.x) / 100.0));
                     result = result + "\"pid\": \"" + info.content.id + "\"," + "\"x\": " + correctLoc.longitude + ", \"y\": " + correctLoc.latitude + "}";
+
+
+                    for (int z = 5; z > 2; z--)
+                    {
+                        if (!File.Exists("site/" + "Pics/" + BaiDuMapManager.inst.streetudt + "/" + info.content.id + "/" + z + ".jpeg"))
+                        {
+                            new Thread((level) =>
+                            {
+                                int zoom = (int)level;
+                                MultiPicDownloadDispatcher<DownloadWorker> d3 = getAttendant(zoom);
+                                d3.setPicInfo(info.content.id, zoom - 1);
+                                d3.start();
+                                byte[] pic = d3.getResult();
+                                if (pic != null && pic.Length > 0)
+                                {
+                                    string path = "site/" + "Pics/" + BaiDuMapManager.inst.streetudt + "/" + info.content.id;
+                                    if (!Directory.Exists(path))
+                                    {
+                                        Directory.CreateDirectory(path);
+                                    }
+                                    path = path + "/" + zoom + ".jpeg";
+                                    File.WriteAllBytes(path, pic);
+                                }
+                            }).Start(z);
+                        }
+                    }
                 }
                 else
                 {

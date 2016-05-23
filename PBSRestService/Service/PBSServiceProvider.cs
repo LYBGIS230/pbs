@@ -1407,8 +1407,9 @@ Invalid version!
                             string[] parts = fullfileName.Split('_');
                             result = Task.Factory.StartNew<byte[]>(delegate ()
                             {
-                                MultiPicDownloadDispatcher<DownloadWorker> d = DataSourceStreetSide.getAttendant();
-                                d.setPicInfo(parts[2], int.Parse(parts[3].Substring(0, parts[3].Length - 5)) - 1);
+                                int zoom = int.Parse(parts[3].Substring(0, parts[3].Length - 5));
+                                MultiPicDownloadDispatcher<DownloadWorker> d = DataSourceStreetSide.getAttendant(zoom);
+                                d.setPicInfo(parts[2], zoom - 1);
                                 d.start();
                                 return d.getResult();
                             }).Result;

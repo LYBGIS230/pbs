@@ -200,8 +200,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
             {
                 int startBundleIndex = maxThreadCount * queue;
                 int endBundleIndex = startBundleIndex + maxThreadCount - 1;
-                endBundleIndex = endBundleIndex > allBundles.Count ? allBundles.Count - 1 : endBundleIndex;
-
+                endBundleIndex = endBundleIndex >= allBundles.Count ? allBundles.Count - 1 : endBundleIndex;
                 for (int i = startBundleIndex; i <= endBundleIndex; i++)
                 {
                     if (_convertingStatus.IsCancelled)

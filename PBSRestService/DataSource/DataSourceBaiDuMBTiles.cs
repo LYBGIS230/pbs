@@ -166,8 +166,6 @@ namespace PBS.DataSource
                 cmd.CommandText = "delete from images where tile_id = @tile_id";
                 cmd.Parameters.AddWithValue("tile_id", "0a5ccc01-c683-4843-b404-ae81b005f23e");
                 cmd.ExecuteNonQuery();
-
-                
                 cmd.CommandText = "INSERT INTO images VALUES (@tile_data,@tile_id)";
                 cmd.Parameters.AddWithValue("tile_data", actualData);
                 cmd.Parameters.AddWithValue("tile_id", "0a5ccc01-c683-4843-b404-ae81b005f23e");

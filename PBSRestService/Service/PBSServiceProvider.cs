@@ -292,7 +292,14 @@ Built using the  <a href=""http://resources.esri.com/arcgisserver/apis/javascrip
                 string mapType = paramTable["TYPE"] as string;
                 if ("traffic" == mapType || "TrafficHis" == mapType || "hot" == mapType)
                 {
-                    bytes = (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
+					if (BaiDuMapManager.inst.RunMode == "ONLINE")
+					{
+						bytes = (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
+					}
+					else
+					{
+						bytes = (Services[serviceName].DataSource as DataSourceBaiDuMBTiles).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
+					}
                 }
             }
 
@@ -1395,7 +1402,7 @@ Invalid version!
             }
             else
             {
-                setEtag("v1");
+                //setEtag("v2");
                 if (fullfileName.Contains("jpeg"))
                 {
                     WebOperationContext.Current.OutgoingResponse.ContentType = "image/jpeg";

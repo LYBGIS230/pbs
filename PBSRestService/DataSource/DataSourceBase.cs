@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Net;
 using System.Collections.Concurrent;
+using PBS.Service;
+using System.Timers;
 
 namespace PBS.DataSource
 {
@@ -344,7 +346,31 @@ namespace PBS.DataSource
             tilingScheme.InitialExtent = tilingScheme.FullExtent;
             #endregion
         }
+        public virtual void startVersionRepository()
+        {
+            System.Timers.Timer t;
+            if (BaiDuMapManager.inst.cp == null)
+            {
+                BaiDuMapManager.inst.cp = new CacheVersionProvider();
+            }
 
+            if (BaiDuMapManager.inst.RunMode == "ONLINE")
+            {
+                BaiDuMapManager.inst.cp.initVersionFormWeb();
+                t = new System.Timers.Timer(BaiDuMapManager.inst.roundInterval);
+                t.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
+                t.AutoReset = true;
+                t.Enabled = true;
+                OnTimedEvent(null, null);
+            }
+            
+            
+        }
+
+        protected virtual void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+
+        }
         /// <summary>
         /// Parse ArcGISTiledMapService info to create TilingScheme
         /// </summary>

@@ -252,17 +252,6 @@ namespace PBS.APP.ViewModels
         }        
 	    #endregion
         #region UI related
-        private bool _isBatchJobStarted = true;
-        public bool IsBatchJobStarted
-        {
-            get { return _isBatchJobStarted; }
-            set
-            {
-                _isBatchJobStarted = value;
-                NotifyPropertyChanged(p => p.IsBatchJobStarted);
-            }
-        }
-
         private bool _isMemCacheEnabled;
         /// <summary>
         /// binding to memcache menu item check status and menu item header text.

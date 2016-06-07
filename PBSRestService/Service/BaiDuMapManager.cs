@@ -47,6 +47,7 @@ namespace PBS.Service
         public string streetudt = "";
         public int startVersion = 0;
         public long roundInterval = 0;
+        public long refreshInterval = 0;
         public CacheVersionProvider cp;
         public ObjectCache instantCache;
         private CacheItemPolicy policy;
@@ -344,6 +345,11 @@ namespace PBS.Service
             long t = (time.Ticks - startTime.Ticks) / 10000;
             return t;
         }
+        public DateTime ConvertLongToDateTime(long l)
+        {
+            return new DateTime(l * 10000 + TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0)).Ticks);
+        }
+
         #region old transform API Area, potential usable
         public double MAPUNIT = 1;
         public int tileHeight = 256;

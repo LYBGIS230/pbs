@@ -43,6 +43,7 @@ namespace PBS.APP
                 }
                 BaiDuMapManager.inst.maxThreadCount = int.Parse(AppUtility.ReadConfig("MaxDownloadThread", "100"));
                 BaiDuMapManager.inst.roundInterval = long.Parse(AppUtility.ReadConfig("RoundInterval", "300000"));
+                BaiDuMapManager.inst.refreshInterval = long.Parse(AppUtility.ReadConfig("VersionRefreshInterval", "7200000"));
                 BaiDuMapManager.inst.RunMode = AppUtility.ReadConfig("RunningMode", "OFFLINE");
                 BaiDuMapManager.inst.bundleSize = int.Parse(AppUtility.ReadConfig("BundleSize", "16"));
                 BaiDuMapManager.inst.streetudt = AppUtility.ReadConfig("StreetUDT", "20160330");

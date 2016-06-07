@@ -54,7 +54,7 @@ namespace PBS.DataSource
             };
             return result;
         }
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        protected override void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (BaiDuMapManager.inst.RunMode == "ONLINE")
             {
@@ -103,23 +103,7 @@ namespace PBS.DataSource
 
             }
         }
-        public void startVersionRepository()
-        {
-            if (BaiDuMapManager.inst.cp == null)
-            {
-                BaiDuMapManager.inst.cp = new CacheVersionProvider();
-            }
-            Timer t = new Timer(BaiDuMapManager.inst.roundInterval);
-            t.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
-            t.AutoReset = true;
-            if (BaiDuMapManager.inst.RunMode == "ONLINE")
-            {
-                BaiDuMapManager.inst.cp.initVersionFormWeb();
-                t.Enabled = true;
-
-            }
-            OnTimedEvent(null, null);
-        }
+        
         public DataSourceBaiDuTileProxy(string name)
         {
             TilingScheme ts;

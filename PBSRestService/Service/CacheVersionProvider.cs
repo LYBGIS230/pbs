@@ -381,31 +381,6 @@ namespace PBS.Service
                 {
                     _conn.Open();
                     loadDataFormDB(_conn);
-                    if (BaiDuMapManager.inst.RunMode == "OFFLINE")
-                    {
-                        System.DateTime now = DateTime.Now;
-                        int minute = now.Minute > 30 ? 30 : 0;
-                        DateTime currentVersion = new DateTime(now.Year, now.Month, now.Day, now.Hour, minute, 0, 0);
-                        long currentTime = BaiDuMapManager.inst.ConvertDateTimeLong(currentVersion);
-                        long start = currentTime - (versionCount - 3) * 30 * 60 * 1000;
-                        SQLiteTransaction adjustTransaction = _conn.BeginTransaction();
-                        using (SQLiteCommand command = new SQLiteCommand(_conn))
-                        {
-                            for (int i = 0; i < versionCount; i++)
-                            {
-                                command.CommandText = "UPDATE TimeNameMap SET startTime = @startTime, endTime = @endTime WHERE version = @version";
-                                command.Parameters.AddWithValue("version", current.version);
-                                command.Parameters.AddWithValue("startTime", start);
-                                command.Parameters.AddWithValue("endTime", start + 30 * 60 * 1000 - 1);
-                                start += 30 * 60 * 1000;
-                                current = current.next;
-                                command.ExecuteNonQuery();
-                            }
-                        }
-                        adjustTransaction.Commit();
-                        adjustTransaction.Dispose();
-                        reloadDataFromDB();
-                    }
                 }
             }
             public void AdjustTime()
@@ -416,15 +391,16 @@ namespace PBS.Service
                     SQLiteTransaction recordTransaction = conn.BeginTransaction();
                     using (SQLiteCommand cmd = new SQLiteCommand(conn))
                     {
-                        cmd.CommandText = "UPDATE TimeNameMap SET startTime = startTime + @count * 30 * 60 * 1000, endTime = endTime + @count * 30 * 60 * 1000  WHERE version = @version";
+                        cmd.CommandText = "UPDATE TimeNameMap SET startTime = startTime + @count * @interval, endTime = endTime + @count * @interval  WHERE version = @version";
                         cmd.Parameters.AddWithValue("version", current.version);
                         cmd.Parameters.AddWithValue("count", versionCount);
+                        cmd.Parameters.AddWithValue("interval", BaiDuMapManager.inst.refreshInterval);
                         cmd.ExecuteNonQuery();
                     }
                     recordTransaction.Commit();
                     recordTransaction.Dispose();
-                    current.start += versionCount * 30 * 60 * 1000;
-                    current.end += versionCount * 30 * 60 * 1000;
+                    current.start += versionCount * BaiDuMapManager.inst.refreshInterval;
+                    current.end += versionCount * BaiDuMapManager.inst.refreshInterval;
                     Utility.Log(LogLevel.Info, null, "Adjusted version: " + current.version + ", versionCount is: " + versionCount);
                     current = current.next;
                 }
@@ -606,18 +582,21 @@ namespace PBS.Service
         }
         public CacheVersionProvider()
         {
-            if (!File.Exists(parameterFile))
+            if (BaiDuMapManager.inst.RunMode == "ONLINE")
             {
-                createParameterFile();
-                initVersionFormWeb();
-            }
-            else
-            {
-                initVersionFormWeb();
-                if(arrangedVersion > currentVersion + 1)
+                if (!File.Exists(parameterFile))
                 {
-                    File.Delete(parameterFile);
                     createParameterFile();
+                    initVersionFormWeb();
+                }
+                else
+                {
+                    initVersionFormWeb();
+                    if (arrangedVersion > currentVersion + 1)
+                    {
+                        File.Delete(parameterFile);
+                        createParameterFile();
+                    }
                 }
             }
             cache = new MemoryCache();

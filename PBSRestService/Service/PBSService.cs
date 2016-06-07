@@ -113,8 +113,15 @@ namespace PBS.Service
                         DataSource = new DataSourceTianDiTuMap();
                         break;
                     case DataSourceTypePredefined.BaiDuOnline:
-                        DataSource = new DataSourceBaiDuTileProxy(strType);
-                        ((DataSourceBaiDuTileProxy)DataSource).startVersionRepository();
+                        if (BaiDuMapManager.inst.RunMode == "ONLINE")
+                        {
+                            DataSource = new DataSourceBaiDuTileProxy(strType);
+                        }
+                        else
+                        {
+                            DataSource = new DataSourceBaiDuMBTiles(null);
+                        }
+                        DataSource.startVersionRepository();
                         break;
                     default:
                         throw new Exception();

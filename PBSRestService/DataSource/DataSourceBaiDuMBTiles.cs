@@ -8,6 +8,8 @@ using System.Collections;
 using PBS.Service;
 using System.Drawing;
 using System.IO;
+using System.Timers;
+using System.Text.RegularExpressions;
 
 namespace PBS.DataSource
 {
@@ -25,10 +27,6 @@ namespace PBS.DataSource
             if (string.IsNullOrEmpty(path))
             {
                 this.serviceType = DataSourceType.DYNAMIC;
-                /*if (BaiDuMapManager.inst.cp == null)
-                {
-                    BaiDuMapManager.inst.cp = new CacheVersionProvider();
-                }*/
             }
             else
             {
@@ -36,7 +34,7 @@ namespace PBS.DataSource
             }
             Initialize(path);
         }
-
+        
         protected override void Initialize(string path)
         {
             if (serviceType == DataSourceType.STATIC)
@@ -137,6 +135,7 @@ namespace PBS.DataSource
             }
         }
 
+
         public override byte[] GetTileBytes(int level, int row, int col)
         {
             //return getModifiedTile(level, row, col, null);
@@ -174,14 +173,45 @@ namespace PBS.DataSource
             updateTr.Commit();
             updateTr.Dispose();
         }
+
+        private string parseTrafficHisTime(string time)// input format: "{day:1,hour:11,time:1}"
+        {
+            Regex reg = new Regex(",hour:(\\d+),");
+            int requestHour = int.Parse(reg.Match(time).Groups[1].Value);
+            return (requestHour * 3600 * 1000).ToString();
+        }
+
+        private string parseTrifficTime(string time)
+        {
+            DateTime d = BaiDuMapManager.inst.ConvertLongToDateTime(long.Parse(time));
+            int milliseconds = 3600 * 1000 * d.Hour + 60 * 1000 * d.Minute + 1000 * d.Second + d.Millisecond;
+            return milliseconds.ToString();
+        }
+        private string parseHotTime(string time)
+        {
+            return (long.Parse(time) % (3600 * 1000 * 24 * 7)).ToString();
+        }
         public byte[] GetTileBytes(int level, int row, int col, object otherParam)
         {
             byte[] result = null;
+            string time = "";
             Hashtable param = otherParam as Hashtable;
-            string time = param["TIME"] as string;
+            if ("TrafficHis".Equals(param["TYPE"]))
+            {
+                time = parseTrafficHisTime(param["TIME"] as string);
+            }
+            else if("traffic".Equals(param["TYPE"]))
+            {
+                time = parseTrifficTime(param["TIME"] as string);
+            }
+            else if("hot".Equals(param["TIME"] as string))
+            {
+                time = parseHotTime(param["TIME"] as string);
+            }
             string fileName = BaiDuMapManager.inst.cp.getCacheFile(time);
+
             if(fileName != null){
-                using (SQLiteConnection connection = new SQLiteConnection("Data source = cache/" + fileName))
+                using (SQLiteConnection connection = new SQLiteConnection("Data source = cache/" + fileName + ".mbtiles"))
                 {
                     connection.Open();
                     if (connection == null)

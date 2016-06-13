@@ -133,13 +133,12 @@ namespace PBS.DataSource
 
         readonly object _tasklocker = new object();
         Queue<object> _tasks = new Queue<object>();
-        private EventWaitHandle _consumer = new AutoResetEvent(false);
+        private Semaphore _consumer = new Semaphore(0, 100);
         private Thread _consumerThread;
 
         readonly object _errorlocker = new object();
         Queue<object> _errorInfo = new Queue<object>();
         private EventWaitHandle _errorHandler = new AutoResetEvent(false);
-        private Thread _errorRecordThread;
         public abstract object DoConsume(Object product);
 
         DateTime jobStart;
@@ -226,14 +225,17 @@ namespace PBS.DataSource
             jobStart = DateTime.Now;
             _consumerThread = new Thread(Consume);
             _consumerThread.Start();
-
-            _errorRecordThread = new Thread(RecordError);
-            _errorRecordThread.Start();
         }
         public void EnqueueTask(object task)
         {
             lock (_tasklocker) _tasks.Enqueue(task);
-            _consumer.Set();
+            try {
+                _consumer.Release();
+            }
+            catch (SemaphoreFullException e)
+            {
+                Utility.LogSimple(LogLevel.Debug, "huge over stock, 100 is not enough for semaphore lock");
+            }
         }
 
         public void EnqueueError(object error)
@@ -267,34 +269,6 @@ namespace PBS.DataSource
                 }
             }
         }
-
-        private void DoRecordError(object e)
-        {
-        }
-
-        private void RecordError()
-        {
-            while (true)
-            {
-                object error = null;
-                lock (_errorlocker)
-                {
-                    if (_errorInfo.Count > 0)
-                    {
-                        error = _errorInfo.Dequeue();
-                    }
-                }
-                if (error != null)
-                {
-                    DoRecordError(error);
-                }
-                else
-                {
-                    _errorHandler.WaitOne();
-                }
-            }
-        }
-
         public void start()
         {
             Run();

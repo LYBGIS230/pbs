@@ -32,13 +32,13 @@ namespace PBS.Service
         };
         public void mergeWithFile(string fileName)
         {
-            cache.mergeWithFile(fileName);
+            cacheForhot.mergeWithFile(fileName);
         }
         public void RecordDownloadRecord(MBVersion version, string downloadRule)
         {
             lock (_locker)
             {
-                cache.insertOneVersion(version, downloadRule);
+                cacheForhot.insertOneVersion(version, downloadRule);
             }
         }
         class MemoryCache
@@ -375,9 +375,9 @@ namespace PBS.Service
                     _conn.Close();
                 }
             }
-            public MemoryCache()
+            public MemoryCache(string fileName)
             {
-                using (SQLiteConnection _conn = new SQLiteConnection("Data source = versions.db"))
+                using (SQLiteConnection _conn = new SQLiteConnection("Data source = " + fileName))
                 {
                     _conn.Open();
                     loadDataFormDB(_conn);
@@ -409,10 +409,11 @@ namespace PBS.Service
         public static int currentVersion = 0;
         public static int arrangedVersion = 0;
         private string parameterFile = "versions.db";
-        private MemoryCache cache;
+        private MemoryCache cacheForhot;
+        private MemoryCache cacheForTraffic;
         public void AdjustTime()
         {
-            cache.AdjustTime();
+            cacheForhot.AdjustTime();
         }
         public string getCurrentVersion()
         {
@@ -438,9 +439,9 @@ namespace PBS.Service
         {
             currentVersion = Convert.ToInt32(getCurrentVersion());
             arrangedVersion = getLastDownload() + 1;
-            if (cache != null)
+            if (cacheForhot != null)
             {
-                cache.setPredictBaseLine(currentVersion, BaiDuMapManager.inst.ConvertDateTimeLong(DateTime.Now));
+                cacheForhot.setPredictBaseLine(currentVersion, BaiDuMapManager.inst.ConvertDateTimeLong(DateTime.Now));
             }
         }
         public string getLastVersion()
@@ -466,14 +467,22 @@ namespace PBS.Service
         ~CacheVersionProvider()
         {
         }
-        public string getCacheFile(string time)
+        public string getCacheFile(string time, string cacheType)
         {
-            MBVersion version = cache.getVersionFromTime(long.Parse(time));
+            MBVersion version = null;
+            if ("hot".Equals(cacheType))
+            {
+                version = cacheForhot.getVersionFromTime(long.Parse(time));
+            }
+            else if("traffic".Equals(cacheType) || "TrafficHis".Equals(cacheType))
+            {
+                version = cacheForTraffic.getVersionFromTime(long.Parse(time));
+            }
             return version == null ? null : version.name;
         }
         public string getVersionFromTime(string time)
         {
-            MBVersion version = cache.getVersionFromTime(long.Parse(time));
+            MBVersion version = cacheForhot.getVersionFromTime(long.Parse(time));
             return version == null ? null : version.version.ToString();
         }
         public string getCahcheFileFromTime(string time)
@@ -559,7 +568,7 @@ namespace PBS.Service
         {
             File.Delete(parameterFile);
             createParameterFile();
-            cache.reloadDataFromDB();
+            cacheForhot.reloadDataFromDB();
             initVersionFormWeb();
         }
         private void createParameterFile()
@@ -599,7 +608,8 @@ namespace PBS.Service
                     }
                 }
             }
-            cache = new MemoryCache();
+            cacheForhot = new MemoryCache(parameterFile);
+            cacheForTraffic = new MemoryCache("versionsT.db");
         }
     }
 }

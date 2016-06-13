@@ -204,14 +204,14 @@ namespace PBS.DataSource
             {
                 time = parseTrifficTime(param["TIME"] as string);
             }
-            else if("hot".Equals(param["TIME"] as string))
+            else if("hot".Equals(param["TYPE"] as string))
             {
                 time = parseHotTime(param["TIME"] as string);
             }
-            string fileName = BaiDuMapManager.inst.cp.getCacheFile(time);
+            string fileName = BaiDuMapManager.inst.cp.getCacheFile(time, param["TYPE"] as string);
 
             if(fileName != null){
-                using (SQLiteConnection connection = new SQLiteConnection("Data source = cache/" + fileName + ".mbtiles"))
+                using (SQLiteConnection connection = new SQLiteConnection("Data source = cache/" + fileName))
                 {
                     connection.Open();
                     if (connection == null)

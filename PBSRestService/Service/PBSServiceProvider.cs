@@ -1381,7 +1381,6 @@ Invalid version!
                     WebOperationContext.Current.OutgoingResponse.SuppressEntityBody = true;
                     WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.NotModified;
                 }
-                //return new MemoryStream(new byte[0]);
             }
             return result;
         }
@@ -1402,7 +1401,7 @@ Invalid version!
             }
             else
             {
-                //setEtag("v2");
+                setEtag("v1");
                 if (fullfileName.Contains("jpeg"))
                 {
                     WebOperationContext.Current.OutgoingResponse.ContentType = "image/jpeg";

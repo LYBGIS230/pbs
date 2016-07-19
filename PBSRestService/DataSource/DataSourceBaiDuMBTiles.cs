@@ -42,6 +42,13 @@ namespace PBS.DataSource
                 _sqlConn = new SQLiteConnection("Data Source=" + path);
                 _sqlConn.Open();
             }
+            else
+            {
+                if(BaiDuMapManager.inst.cp == null)
+                {
+                    BaiDuMapManager.inst.cp = new CacheVersionProvider();
+                }
+            }
             this.Type = DataSourceTypePredefined.BaiduMBTiles.ToString();
             base.Initialize(path);
         }

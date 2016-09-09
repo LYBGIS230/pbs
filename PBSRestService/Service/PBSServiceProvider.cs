@@ -18,6 +18,8 @@ using System.Collections;
 using PBS.Util;
 using System.Xml.Linq;
 using System.Linq;
+using System.Windows;
+using System.Runtime.InteropServices;
 
 namespace PBS.Service
 {
@@ -26,6 +28,13 @@ namespace PBS.Service
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class PBSServiceProvider : IPBSServiceProvider
     {
+        [DllImport("user32.dll", EntryPoint = "FindWindow", CharSet = CharSet.Auto)]
+        private extern static IntPtr FindWindow(string lpClassName, string lpWindowName);
+        public const int WM_CLOSE = 0x10;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private extern static int PostMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
         public Dictionary<string, PBSService> Services { get; set; }
         public const string PBSName = "Portable Basemap Server";
         private string StreetMapMode = "ONLINE";
@@ -290,17 +299,27 @@ Built using the  <a href=""http://resources.esri.com/arcgisserver/apis/javascrip
             if (bytes == null)
             {
                 string mapType = paramTable["TYPE"] as string;
-                if ("traffic" == mapType || "TrafficHis" == mapType || "hot" == mapType)
-                {
-					if (BaiDuMapManager.inst.RunMode == "ONLINE")
-					{
-						bytes = (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
-					}
-					else
-					{
-						bytes = (Services[serviceName].DataSource as DataSourceBaiDuMBTiles).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
-					}
-                }
+				if (BaiDuMapManager.inst.RunMode == "ONLINE")
+				{
+                    if ("hot" == mapType)
+                    {
+                        if (BaiDuMapManager.inst.cp == null)
+                        {
+                            new Thread(new ThreadStart(()=>MessageBox.Show("Start init version repository !", "Info0x0001"))).Start();
+                            (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).startVersionRepository();
+                            IntPtr ptr = FindWindow(null, "Info0x0001");
+                            if (ptr != IntPtr.Zero)
+                            {
+                                PostMessage(ptr, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                            }
+                        }
+                    }
+					bytes = (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
+				}
+				else
+				{
+					bytes = (Services[serviceName].DataSource as DataSourceBaiDuMBTiles).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), otherParam);
+				}
             }
 
             Services[serviceName].LogInfo.OutputTileCountMemcached++;
@@ -503,8 +522,7 @@ return GetTileStream(serviceName, level, row, col);
                         tileLEA.GeneratedMethod = TileGeneratedSource.FromMemcached;
                     }
                 }
-                if (bytes == null && (Services[serviceName].DataSource.IsOnlineMap ||
-    Services[serviceName].DataSource is DataSourceRasterImage))
+                if (bytes == null && (Services[serviceName].DataSource.IsOnlineMap || Services[serviceName].DataSource is DataSourceRasterImage))
                 {
                     bytes = Services[serviceName].DataSource.GetTileBytesFromLocalCache(int.Parse(level), int.Parse(row), int.Parse(col));
                     if (bytes != null)
@@ -519,7 +537,14 @@ return GetTileStream(serviceName, level, row, col);
                 }
                 if (bytes == null)
                 {
-                    bytes = Services[serviceName].DataSource.GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col));
+                    if (Services[serviceName].DataSource is DataSourceBaiDuTileProxy)
+                    {
+                        bytes = (Services[serviceName].DataSource as DataSourceBaiDuTileProxy).GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col), new Hashtable() { { "TYPE", "base" } });
+                    }
+                    else
+                    {
+                        bytes = Services[serviceName].DataSource.GetTileBytes(int.Parse(level), int.Parse(row), int.Parse(col));
+                    }
                     Services[serviceName].LogInfo.OutputTileCountDynamic++;
                     Services[serviceName].LogInfo.OutputTileTotalTime += sw.Elapsed.TotalMilliseconds;
                     tileLEA.GeneratedMethod = TileGeneratedSource.DynamicOutput;
@@ -593,8 +618,8 @@ Invalid version!
                 }
                 else if (service.DataSource.TilingScheme.WKID == 102100 || service.DataSource.TilingScheme.WKID == 102113 || service.DataSource.TilingScheme.WKID == 3857)
                 {
-                    Point geoLowerLeft = Utility.WebMercatorToGeographic(service.DataSource.TilingScheme.FullExtent.LowerLeft);
-                    Point geoUpperRight = Utility.WebMercatorToGeographic(service.DataSource.TilingScheme.FullExtent.UpperRight);
+                    PBS.Util.Point geoLowerLeft = Utility.WebMercatorToGeographic(service.DataSource.TilingScheme.FullExtent.LowerLeft);
+                    PBS.Util.Point geoUpperRight = Utility.WebMercatorToGeographic(service.DataSource.TilingScheme.FullExtent.UpperRight);
 
                     wgs84boundingbox = new Envelope(geoLowerLeft.X, geoLowerLeft.Y, geoUpperRight.X, geoUpperRight.Y);
                 }

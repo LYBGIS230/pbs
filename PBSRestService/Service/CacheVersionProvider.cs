@@ -408,7 +408,8 @@ namespace PBS.Service
         }
         public static int currentVersion = 0;
         public static int arrangedVersion = 0;
-        private string parameterFile = "versions.db";
+        private string parameterFileForHot = "versions.db";
+        private string parameterFileForTraffic = "versionsT.db";
         private MemoryCache cacheForhot;
         private MemoryCache cacheForTraffic;
         public void AdjustTime()
@@ -437,7 +438,14 @@ namespace PBS.Service
         }
         public void initVersionFormWeb()
         {
-            currentVersion = Convert.ToInt32(getCurrentVersion());
+            try
+            {
+                currentVersion = Convert.ToInt32(getCurrentVersion());
+            }
+            catch
+            {
+                currentVersion = 16000;
+            }
             arrangedVersion = getLastDownload() + 1;
             if (cacheForhot != null)
             {
@@ -566,15 +574,15 @@ namespace PBS.Service
         }
         public void resetVersions()
         {
-            File.Delete(parameterFile);
+            File.Delete(parameterFileForHot);
             createParameterFile();
             cacheForhot.reloadDataFromDB();
             initVersionFormWeb();
         }
         private void createParameterFile()
         {
-            SQLiteConnection.CreateFile(parameterFile);
-            using (SQLiteConnection conn = new SQLiteConnection("Data source = " + parameterFile))
+            SQLiteConnection.CreateFile(parameterFileForHot);
+            using (SQLiteConnection conn = new SQLiteConnection("Data source = " + parameterFileForHot))
             {
                 conn.Open();
                 using (SQLiteTransaction transaction = conn.BeginTransaction())
@@ -593,7 +601,7 @@ namespace PBS.Service
         {
             if (BaiDuMapManager.inst.RunMode == "ONLINE")
             {
-                if (!File.Exists(parameterFile))
+                if (!File.Exists(parameterFileForHot))
                 {
                     createParameterFile();
                     initVersionFormWeb();
@@ -603,13 +611,18 @@ namespace PBS.Service
                     initVersionFormWeb();
                     if (arrangedVersion > currentVersion + 1)
                     {
-                        File.Delete(parameterFile);
+                        File.Delete(parameterFileForHot);
                         createParameterFile();
                     }
                 }
+
             }
-            cacheForhot = new MemoryCache(parameterFile);
-            cacheForTraffic = new MemoryCache("versionsT.db");
+            else
+            {
+                cacheForTraffic = new MemoryCache(parameterFileForTraffic);
+            }
+            cacheForhot = new MemoryCache(parameterFileForHot);
+            
         }
     }
 }

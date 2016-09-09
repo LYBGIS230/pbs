@@ -66,7 +66,14 @@ namespace PBS.DataSource
                 }
                 else
                 {
-                    version = Convert.ToInt32(BaiDuMapManager.inst.cp.getCurrentVersion());
+                    try
+                    {
+                        version = Convert.ToInt32(BaiDuMapManager.inst.cp.getCurrentVersion());
+                    }
+                    catch (Exception f)
+                    {
+                        version = 16000;
+                    }
                 }
                 
                 if (version > 0)
@@ -152,6 +159,11 @@ namespace PBS.DataSource
                     JavaScriptSerializer jss = new JavaScriptSerializer();
                     TrafficHisParam p = jss.Deserialize<TrafficHisParam>(paramTable["TIME"] as string);
                     uri = string.Format(baseUrls["BaiduTrafficHis"], level, col, row, p.time, p.day, p.hour);
+                }
+                else if ("base" == type)
+                {
+                    string subdomain = _subDomains[Math.Abs(level + col + row) % _subDomains.Length];
+                    uri = string.Format(baseUrls["BaiduBase"], level, col, row, subdomain);
                 }
             }
             else

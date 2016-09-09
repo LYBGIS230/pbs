@@ -121,7 +121,6 @@ namespace PBS.Service
                         {
                             DataSource = new DataSourceBaiDuMBTiles(null);
                         }
-                        DataSource.startVersionRepository();
                         break;
                     default:
                         throw new Exception();
@@ -150,7 +149,8 @@ namespace PBS.Service
                 if (!known)
                     throw new Exception(strType + " is not a known data source type.");
                 switch (strType)
-                {                  
+                {
+                    //this options is a list of preview of baidu map download window, except BaiduPanoMark
                     case "BaiduTrafficHis":
                     case "BaiduBase":
                     case "BaiduHot":

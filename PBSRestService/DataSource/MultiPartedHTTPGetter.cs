@@ -302,6 +302,7 @@ namespace PBS.DataSource
         {
             this.AllJobFinished += (count) =>
             {
+                Utility.LogSimple(LogLevel.Debug, "All job finished triggered: " + panOid + ", " + (zoom + 1));
                 Bitmap map;
                 Graphics destPic;
                 byte[] picBytes;
@@ -347,14 +348,15 @@ namespace PBS.DataSource
                                     {
                                         int[] p = decodeIndex(i, zoom);
                                         RunJob(panOid + "," + udt + "," + zoom + "," + p[1] + "," + p[0]);
-                                        Utility.LogSimple(LogLevel.Debug, "Tile Recovered, Params: " + panOid + ", " + (zoom + 1) + "_" + p[0] + "_" + p[1]);
-                                }
+                                        //Utility.LogSimple(LogLevel.Debug, "Tile Recovered, Params: " + panOid + ", " + (zoom + 1) + "_" + p[0] + "_" + p[1]);
+                                    }
                                 }
                             });
                             recoverThread.Start();
                         }
                         else
                         {
+                            Utility.LogSimple(LogLevel.Debug, "All job arrived triggered for level : " + (zoom + 1));
                             _timer.Stop();
                             if (secondEclipsed == 1.5)
                             {
@@ -371,28 +373,28 @@ namespace PBS.DataSource
                 else
                 {
                     _timer.Stop();
-                    //Utility.LogSimple(LogLevel.Debug, "Time out and timer stop called: " + panOid + ", " + (zoom + 1));
+                    Utility.LogSimple(LogLevel.Debug, "Time out and timer stop called: " + panOid + ", " + (zoom + 1) + ", finished count: " + finishedJobCount + ", total job count:" + jobCount);
                     if (!isIdle)
                     {
                         isIdle = true;
                         setTotalJobCount(9999);
                         finalPic = new byte[0];
                         manlEvent.Set();
-                        //Utility.LogSimple(LogLevel.Debug, "Time out and set called: " + panOid + ", " + (zoom + 1));
+                        Utility.LogSimple(LogLevel.Debug, "Time out and set called: " + panOid + ", " + (zoom + 1));
                     }
                 }
             };
         }
         protected override void afterJobFinished(object param)
         {
-            PicResult r = param as PicResult;
-            if (indicators[r.row * (int)Math.Pow(2, r.zoom) + r.col])
-            {
-                Utility.LogSimple(LogLevel.Debug, "Repeated Tile abandoned, Params: " + panOid + ", " + (zoom + 1) + "_" + r.row + "_" + r.col);
-                return;
-            }
             if (param != null)
             {
+                PicResult r = param as PicResult;
+                if (indicators[r.row * (int)Math.Pow(2, r.zoom) + r.col])
+                {
+                    //Utility.LogSimple(LogLevel.Debug, "Repeated Tile abandoned, Params: " + panOid + ", " + (zoom + 1) + "_" + r.row + "_" + r.col);
+                    return;
+                }
                 EnqueueTask(param);
                 onWorkFinished(param);
                 finishedJobCount++;

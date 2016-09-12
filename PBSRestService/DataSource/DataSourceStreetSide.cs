@@ -36,7 +36,7 @@ namespace PBS.DataSource
                 {
                     if (entry[i].isIdle)
                     {
-                        Utility.LogSimple(LogLevel.Debug, "Total " + count + " dispatcher, and choosed " + i);
+                        Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom "+ level + ", Total " + count + " dispatcher, and choosed " + i);
                         return entry[i];
                     }
                 }
@@ -44,7 +44,7 @@ namespace PBS.DataSource
                 {
                     MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
                     entry.Add(d);
-                    Utility.LogSimple(LogLevel.Debug, "new dispatcher added");
+                    Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom " + level + ", Total " + count + ", new dispatcher added");
                     return d;
                 }
             }
@@ -187,9 +187,12 @@ namespace PBS.DataSource
                                 MultiPicDownloadDispatcher<DownloadWorker> d3 = getAttendant(zoom);
                                 d3.setPicInfo(info.content.id, zoom - 1);
                                 d3.start();
+                                Utility.LogSimple(LogLevel.Debug, "level " + level + " pano triggered!");
                                 byte[] pic = d3.getResult();
+                                Utility.LogSimple(LogLevel.Debug, "level " + level + " pano returned!");
                                 if (pic != null && pic.Length > 0)
                                 {
+                                    Utility.LogSimple(LogLevel.Debug, "level " + level + " pano start to write to file!");
                                     string path = "site/" + "Pics/" + BaiDuMapManager.inst.streetudt + "/" + info.content.id;
                                     if (!Directory.Exists(path))
                                     {

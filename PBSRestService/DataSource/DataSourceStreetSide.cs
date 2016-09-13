@@ -39,7 +39,7 @@ namespace PBS.DataSource
         {
             lock (dispatcherlock)
             {
-                PrintEntries();
+                //PrintEntries();
                 List<MultiPicDownloadDispatcher<DownloadWorker>> entry = entries[level - 3];
                 if (entry == null)
                 {

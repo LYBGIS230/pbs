@@ -121,15 +121,15 @@ namespace PBS.DataSource
             return _inst;
         }
         public event NotifyEvent AllJobFinished;
-        public int currentIndex = 0; //currently inquiryed thread number
-        public int childCount = 5;
+        private int currentIndex = 0; //currently inquiryed thread number
+        private int childCount = 5;
         private EventWaitHandle[] _download;
         protected int jobCount;
         protected int finishedJobCount;
         protected bool allJobArrived;
         string[] _messages;
         WorkerBase[] downloaders;
-        public bool[] downloaderStatus;
+        private bool[] downloaderStatus;
 
         readonly object _tasklocker = new object();
         Queue<object> _tasks = new Queue<object>();
@@ -155,7 +155,7 @@ namespace PBS.DataSource
             DoJob(chooseIdleThread(), param);
         }
 
-        public virtual int chooseIdleThread()
+        private int chooseIdleThread()
         {
             int result = 0;
             lock (_threadChooselocker)
@@ -402,45 +402,6 @@ namespace PBS.DataSource
                     }
                 }
             };
-        }
-        public override int chooseIdleThread()
-        {
-            int result = 0;
-            if (zoom == 4)
-            {
-                Utility.LogSimple(LogLevel.Debug, "init index is: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
-            }
-            lock (_threadChooselocker)
-            {
-                for (; currentIndex < childCount; currentIndex++)
-                {
-
-                    if (downloaderStatus[currentIndex])
-                    {
-                        result = currentIndex;
-                        currentIndex = (currentIndex + 1) % childCount;
-                        if (zoom == 4)
-                        {
-                            Utility.LogSimple(LogLevel.Debug, "thread index changed out of for: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
-                        }
-                        break;
-                    }
-
-                    if (currentIndex == childCount - 1)
-                    {
-                        currentIndex = 0;
-                        if (zoom == 4)
-                        {
-                            Utility.LogSimple(LogLevel.Debug, "thread index reset to zero: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
-                        }
-                    }
-                }
-            }
-            if (zoom == 4)
-            {
-                Utility.LogSimple(LogLevel.Debug, "end index is: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
-            }
-            return result;
         }
         protected override void afterJobFinished(object param)
         {

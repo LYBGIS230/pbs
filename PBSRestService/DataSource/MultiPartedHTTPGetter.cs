@@ -121,21 +121,22 @@ namespace PBS.DataSource
             return _inst;
         }
         public event NotifyEvent AllJobFinished;
-        private int currentIndex = 0; //currently inquiryed thread number
-        int childCount = 5;
+        public int currentIndex = 0; //currently inquiryed thread number
+        public int childCount = 5;
         private EventWaitHandle[] _download;
         protected int jobCount;
         protected int finishedJobCount;
         protected bool allJobArrived;
         string[] _messages;
         WorkerBase[] downloaders;
-        bool[] downloaderStatus;
+        public bool[] downloaderStatus;
 
         readonly object _tasklocker = new object();
         Queue<object> _tasks = new Queue<object>();
         private Semaphore _consumer = new Semaphore(0, 100);
         private Thread _consumerThread;
 
+        public readonly object _threadChooselocker = new object();
         readonly object _errorlocker = new object();
         Queue<object> _errorInfo = new Queue<object>();
         private EventWaitHandle _errorHandler = new AutoResetEvent(false);
@@ -154,21 +155,24 @@ namespace PBS.DataSource
             DoJob(chooseIdleThread(), param);
         }
 
-        private int chooseIdleThread()
+        public virtual int chooseIdleThread()
         {
             int result = 0;
-            for (; currentIndex < childCount; currentIndex++)
+            lock (_threadChooselocker)
             {
-                if (downloaderStatus[currentIndex])
+                for (; currentIndex < childCount; currentIndex++)
                 {
-                    result = currentIndex;
-                    currentIndex = (currentIndex + 1) % childCount;
-                    break;
-                }
+                    if (downloaderStatus[currentIndex])
+                    {
+                        result = currentIndex;
+                        currentIndex = (currentIndex + 1) % childCount;
+                        break;
+                    }
 
-                if (currentIndex == childCount - 1)
-                {
-                    currentIndex = 0;
+                    if (currentIndex == childCount - 1)
+                    {
+                        currentIndex = -1;
+                    }
                 }
             }
             return result;
@@ -294,12 +298,26 @@ namespace PBS.DataSource
         private string udt = BaiDuMapManager.inst.streetudt;
         byte[][] resultBuffer;
         int[] partCounts = new int[] { 1, 2, 8, 32, 128 };
+        private List<int> recoverPoints;
         bool[] indicators;
         byte[] finalPic;
         ManualResetEvent manlEvent = new ManualResetEvent(false);
         public MultiPicDownloadDispatcher(int childThreadNum)
             : base(childThreadNum)
         {
+            /*if (childThreadNum == 4)
+            {
+                this.recoverPoints = new List<int>() { 5, 9, 12, 14, 15 };
+            }
+            else if (childThreadNum == 8)
+            {
+                this.recoverPoints = new List<int>() { 9, 17, 23, 27, 29 };
+            }
+            else if (childThreadNum == 16)
+            {
+                this.recoverPoints = new List<int>() { 13, 25, 33, 37, 40 };
+            }*/
+            this.recoverPoints = new List<int>() { 13, 25, 33, 37, 40 };
             this.AllJobFinished += (count) =>
             {
                 Utility.LogSimple(LogLevel.Debug, "All job finished triggered: " + panOid + ", " + (zoom + 1));
@@ -331,10 +349,9 @@ namespace PBS.DataSource
             };
             _timer.Elapsed += (s, a) =>
             {
-                List<int> recoverPoints = new List<int>() { 10, 14, 17, 19, 20 };
                 int len = indicators.Length;
                 secondEclipsed += 1;
-                if (secondEclipsed < 21)
+                if (secondEclipsed < recoverPoints[4])
                 {
                     if (recoverPoints.Contains(secondEclipsed))
                     {
@@ -347,6 +364,7 @@ namespace PBS.DataSource
                                     if (!indicators[i])
                                     {
                                         int[] p = decodeIndex(i, zoom);
+                                        Utility.LogSimple(LogLevel.Debug, "start up recover thread");
                                         RunJob(panOid + "," + udt + "," + zoom + "," + p[1] + "," + p[0]);
                                         //Utility.LogSimple(LogLevel.Debug, "Tile Recovered, Params: " + panOid + ", " + (zoom + 1) + "_" + p[0] + "_" + p[1]);
                                     }
@@ -384,6 +402,45 @@ namespace PBS.DataSource
                     }
                 }
             };
+        }
+        public override int chooseIdleThread()
+        {
+            int result = 0;
+            if (zoom == 4)
+            {
+                Utility.LogSimple(LogLevel.Debug, "init index is: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
+            }
+            lock (_threadChooselocker)
+            {
+                for (; currentIndex < childCount; currentIndex++)
+                {
+
+                    if (downloaderStatus[currentIndex])
+                    {
+                        result = currentIndex;
+                        currentIndex = (currentIndex + 1) % childCount;
+                        if (zoom == 4)
+                        {
+                            Utility.LogSimple(LogLevel.Debug, "thread index changed out of for: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
+                        }
+                        break;
+                    }
+
+                    if (currentIndex == childCount - 1)
+                    {
+                        currentIndex = 0;
+                        if (zoom == 4)
+                        {
+                            Utility.LogSimple(LogLevel.Debug, "thread index reset to zero: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
+                        }
+                    }
+                }
+            }
+            if (zoom == 4)
+            {
+                Utility.LogSimple(LogLevel.Debug, "end index is: " + panOid + ", " + (zoom + 1) + ",index " + currentIndex);
+            }
+            return result;
         }
         protected override void afterJobFinished(object param)
         {
@@ -475,7 +532,7 @@ namespace PBS.DataSource
             request.KeepAlive = true;
             request.Method = "GET";
             request.Proxy = null;//==no proxy
-            request.Timeout = 20000;
+            request.Timeout = 1000;
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {

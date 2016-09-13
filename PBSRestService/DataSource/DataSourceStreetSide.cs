@@ -14,38 +14,60 @@ namespace PBS.DataSource
 {
     public class DataSourceStreetSide
     {
-        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel3;
-        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel4;
-        public static List<MultiPicDownloadDispatcher<DownloadWorker>> servPoolLevel5;
-        public static MultiPicDownloadDispatcher<DownloadWorker> getAttendant(int level)
+        public static object dispatcherlock = new object();
+        public static List<MultiPicDownloadDispatcher<DownloadWorker>>[] entries = new List<MultiPicDownloadDispatcher<DownloadWorker>>[] { null, null, null };
+        public static int[] threadNumbers = new int[] { 4, 8, 16 };
+        public static void PrintEntries()
         {
-            List<MultiPicDownloadDispatcher<DownloadWorker>>[] entries = new List<MultiPicDownloadDispatcher<DownloadWorker>>[] { servPoolLevel3, servPoolLevel4, servPoolLevel5 };
-            int[] threadNumbers = new int[] { 8, 32, 64 };
-            List<MultiPicDownloadDispatcher<DownloadWorker>> entry = entries[level - 3];
-            if (entry == null)
+            List<MultiPicDownloadDispatcher<DownloadWorker>> temp;
+            String printStr = "";
+            for (int i = 0; i < 3; i++)
             {
-                MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
-                entry = new List<MultiPicDownloadDispatcher<DownloadWorker>>();
-                entry.Add(d);
-                return d;
-            }
-            int count = entry.Count;
-            while (true)
-            {
-                for (int i = 0; i < count; i++)
+                temp = entries[i];
+                printStr = "Level " + (i + 3) + " Dispatcher --> ";
+                if (temp != null && temp.Count > 0)
                 {
-                    if (entry[i].isIdle)
+                    foreach (MultiPicDownloadDispatcher<DownloadWorker> d in temp)
                     {
-                        Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom "+ level + ", Total " + count + " dispatcher, and choosed " + i);
-                        return entry[i];
+                        printStr = printStr + (d.isIdle ? " 1" : " 0");
                     }
                 }
-                if (count < 6)
+                Utility.LogSimple(LogLevel.Debug, printStr);
+            }
+        }
+        public static MultiPicDownloadDispatcher<DownloadWorker> getAttendant(int level)
+        {
+            lock (dispatcherlock)
+            {
+                PrintEntries();
+                List<MultiPicDownloadDispatcher<DownloadWorker>> entry = entries[level - 3];
+                if (entry == null)
                 {
                     MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
+                    entry = new List<MultiPicDownloadDispatcher<DownloadWorker>>();
                     entry.Add(d);
-                    Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom " + level + ", Total " + count + ", new dispatcher added");
+                    entries[level - 3] = entry;
                     return d;
+                }
+                int count = entry.Count;
+                while (true)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (entry[i].isIdle)
+                        {
+                            Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom " + level + ", Total " + count + " dispatcher, and choosed " + i);
+                            return entry[i];
+                        }
+                    }
+                    if (count < 6)
+                    {
+                        MultiPicDownloadDispatcher<DownloadWorker> d = new MultiPicDownloadDispatcher<DownloadWorker>(threadNumbers[level - 3]);
+                        entry.Add(d);
+                        Utility.LogSimple(LogLevel.Debug, "Get dispather for zoom " + level + ", Total " + count + ", new dispatcher added");
+                        return d;
+                    }
+                    Thread.Sleep(200);
                 }
             }
         }
@@ -147,7 +169,7 @@ namespace PBS.DataSource
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4";
 
             request.Proxy = null;
-            request.Timeout = 20000;
+            request.Timeout = 5000;
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {

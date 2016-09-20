@@ -146,13 +146,13 @@ namespace PBS
                 {
                     if ((bool)reader["using3857"])
                     {
-                        string s = ServiceManager.CreateService((string)reader["name"], int.Parse(reader["port"].ToString()), reader["type"].ToString(), (string)reader["datasourcepath"], (bool)reader["allowmemcache"], (bool)reader["disableclientcache"], (bool)reader["displaynodatatile"], (VisualStyle)Enum.Parse(typeof(VisualStyle), (string)reader["visualstyle"]));
+                        string s = ServiceManager.CreateService((string)reader["name"], int.Parse(reader["port"].ToString()), reader["type"].ToString(), reader["subtype"].ToString(), (string)reader["datasourcepath"], (bool)reader["allowmemcache"], (bool)reader["disableclientcache"], (bool)reader["displaynodatatile"], (VisualStyle)Enum.Parse(typeof(VisualStyle), (string)reader["visualstyle"]));
                         if (s != string.Empty)
                             result += s + "\r\n";
                     }
                     else
                     {
-                        string s = ServiceManager.CreateService((string)reader["name"], int.Parse(reader["port"].ToString()), reader["type"].ToString(), (string)reader["datasourcepath"], (bool)reader["allowmemcache"], (bool)reader["disableclientcache"], (bool)reader["displaynodatatile"], (VisualStyle)Enum.Parse(typeof(VisualStyle), (string)reader["visualstyle"], true),(string)reader["tilingschemepath"]);     
+                        string s = ServiceManager.CreateService((string)reader["name"], int.Parse(reader["port"].ToString()), reader["type"].ToString(), reader["subtype"].ToString(), (string)reader["datasourcepath"], (bool)reader["allowmemcache"], (bool)reader["disableclientcache"], (bool)reader["displaynodatatile"], (VisualStyle)Enum.Parse(typeof(VisualStyle), (string)reader["visualstyle"], true), (string)reader["tilingschemepath"]);     
                         if (s != string.Empty)
                             result += s + "\r\n";
                     }
@@ -206,11 +206,12 @@ namespace PBS
                         foreach (PBSService service in ServiceManager.Services)
                         {
                             //save services
-                            cmd.CommandText = "INSERT INTO " + CONST_strTableNameServices + " VALUES (@configuration,@name,@port,@type,@tilingschemepath,@using3857,@datasourcepath,@allowmemcache,@disableclientcache,@displaynodatatile,@visualstyle)";
+                            cmd.CommandText = "INSERT INTO " + CONST_strTableNameServices + " VALUES (@configuration,@name,@port,@type,@subtype,@tilingschemepath,@using3857,@datasourcepath,@allowmemcache,@disableclientcache,@displaynodatatile,@visualstyle)";
                             cmd.Parameters.AddWithValue("@configuration", name);
                             cmd.Parameters.AddWithValue("@name", service.ServiceName);
                             cmd.Parameters.AddWithValue("@port", service.Port);
                             cmd.Parameters.AddWithValue("@type", service.DataSource.Type.ToString());
+                            cmd.Parameters.AddWithValue("@subtype", service.DataSource.subType.ToString());
                             cmd.Parameters.AddWithValue("@tilingschemepath", service.DataSource.TilingScheme.Path);
                             cmd.Parameters.AddWithValue("@using3857", service.DataSource.TilingScheme.WKID == 102100||service.DataSource.TilingScheme.WKID==3857 ? true : false);
                             cmd.Parameters.AddWithValue("@datasourcepath", service.DataSource.Path);
@@ -393,7 +394,7 @@ namespace PBS
                     cmd.CommandText = @"CREATE TABLE """ + CONST_strTableNameConfigurations + @""" (""name"" TEXT PRIMARY KEY  NOT NULL  UNIQUE , ""servicecount"" INTEGER NOT NULL , ""created"" DATETIME)";
                     cmd.ExecuteNonQuery();
                     //services table
-                    cmd.CommandText = @"CREATE TABLE """ + CONST_strTableNameServices + @""" (""configuration"" TEXT NOT NULL , ""name"" TEXT NOT NULL , ""port"" INTEGER NOT NULL , ""type"" TEXT NOT NULL , ""tilingschemepath"" TEXT, ""using3857"" BOOL, ""datasourcepath"" TEXT, ""allowmemcache"" BOOL,""disableclientcache"" BOOL, ""displaynodatatile"" BOOL, ""visualstyle"" TEXT)";
+                    cmd.CommandText = @"CREATE TABLE """ + CONST_strTableNameServices + @""" (""configuration"" TEXT NOT NULL , ""name"" TEXT NOT NULL , ""port"" INTEGER NOT NULL , ""type"" TEXT NOT NULL , ""subtype"" TEXT NOT NULL ,""tilingschemepath"" TEXT, ""using3857"" BOOL, ""datasourcepath"" TEXT, ""allowmemcache"" BOOL,""disableclientcache"" BOOL, ""displaynodatatile"" BOOL, ""visualstyle"" TEXT)";
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = @"CREATE INDEX services_index on "+CONST_strTableNameServices+@" (configuration,name)";
                     cmd.ExecuteNonQuery();

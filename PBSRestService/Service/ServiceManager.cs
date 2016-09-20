@@ -107,7 +107,7 @@ namespace PBS.Service
         /// <param name="style"></param>
         /// <param name="tilingSchemePath">Set this parameter only when type is ArcGISDynamicMapService and do not use Google Maps's tiling scheme</param>
         /// <returns>errors or warnings. string.empty if nothing wrong.</returns>
-        public static string CreateService(string name, int port, string strType, string dataSorucePath,bool allowMemoryCache, bool disableClientCache, bool displayNoDataTile,VisualStyle style, string tilingSchemePath=null)
+        public static string CreateService(string name, int port, string strType, string subType, string dataSorucePath,bool allowMemoryCache, bool disableClientCache, bool displayNoDataTile,VisualStyle style, string tilingSchemePath=null)
         {
             PBSServiceProvider serviceProvider = null;
             string str;
@@ -127,7 +127,7 @@ namespace PBS.Service
             PBSService service;
             try
             {
-                service = new PBSService(name, dataSorucePath, port, strType, allowMemoryCache, disableClientCache, displayNoDataTile, style, tilingSchemePath);
+                service = new PBSService(name, dataSorucePath, port, strType, subType, allowMemoryCache, disableClientCache, displayNoDataTile, style, tilingSchemePath);
             }
             catch (Exception e)//in case of reading conf.xml or conf.cdi file error|| reading a sqlite db error
             {
@@ -172,7 +172,7 @@ namespace PBS.Service
             }
         }
 
-        public static string CreateServiceByHTTP(string name, int port, string dataSourceType, string dataSorucePath, bool allowMemoryCache, bool disableClientCache, bool displayNoDataTile, VisualStyle style, string tilingSchemePath = null)
+        public static string CreateServiceByHTTP(string name, int port, string dataSourceType, string dataSourceSubType, string dataSorucePath, bool allowMemoryCache, bool disableClientCache, bool displayNoDataTile, VisualStyle style, string tilingSchemePath = null)
         {
             System.Collections.Hashtable ht = new System.Collections.Hashtable();
             ht.Add("name", name);

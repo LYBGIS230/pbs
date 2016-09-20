@@ -55,7 +55,7 @@ namespace PBS.Service
         /// <param name="disableClientCache"></param>
         /// <param name="displayNodataTile"></param>
         /// <param name="tilingSchemePath">Set this parameter only when type is ArcGISDynamicMapService||RasterDataset and do not use Google Maps's tiling scheme</param>
-        public PBSService(string serviceName, string dataSourcePath, int port, string strType, bool allowmemcache, bool disableClientCache, bool displayNodataTile, VisualStyle style, string tilingSchemePath)
+        public PBSService(string serviceName, string dataSourcePath, int port, string strType, string strSubType, bool allowmemcache, bool disableClientCache, bool displayNodataTile, VisualStyle style, string tilingSchemePath)
         {
             ServiceName = serviceName;
             string prefixName = "KGIS";
@@ -71,13 +71,22 @@ namespace PBS.Service
                         DataSource = new DataSourceBaiDuMBTiles(dataSourcePath);
                         break;
                     case DataSourceTypePredefined.OtherMap:
-                        DataSource = new DataSourceOtherMap(dataSourcePath, false) {Path = dataSourcePath };
-                        break;
-                    case DataSourceTypePredefined.OtherMapRoadProxy:
-                        DataSource = new DataSourceOtherMapProxy(DataSourceTypePredefined.OtherMapRoadProxy.ToString());
-                        break;
-                    case DataSourceTypePredefined.OtherMapImageProxy:
-                        DataSource = new DataSourceOtherMapProxy(DataSourceTypePredefined.OtherMapImageProxy.ToString());
+                        if (String.IsNullOrEmpty(strSubType))
+                        {
+                            DataSource = new DataSourceOtherMap(dataSourcePath, false) { Path = dataSourcePath };
+                        }
+                        else if (String.Equals("PGISRoad", strSubType))
+                        {
+                            DataSource = new DataSourceOtherMapProxy("OtherMapRoadProxy");
+                        }
+                        else if (String.Equals("PGISImagery", strSubType))
+                        {
+                            DataSource = new DataSourceOtherMapProxy("OtherMapImageProxy");
+                        }
+                        else if (String.Equals("TaiZhou", strSubType))
+                        {
+                            DataSource = new DataSourceOtherMapProxy("TaiZhou");
+                        }
                         break;
                     case DataSourceTypePredefined.MBTiles:
                         DataSource = new DataSourceMBTiles(dataSourcePath);

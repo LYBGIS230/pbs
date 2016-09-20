@@ -37,6 +37,7 @@
     <sys:String x:Key="menuAbout">关于</sys:String>
     <!--interface-->
     <sys:String x:Key="tbDataSourceType">数据源类型:</sys:String>
+    <sys:String x:Key="tbSubType">子类型:</sys:String>
     <sys:String x:Key="btnArcGISDynamicMapServiceParams">附加参数</sys:String>
     <sys:String x:Key="btnDoBatchJob">运行任务</sys:String>
     <sys:String x:Key="cbAutoConfirm">自动确认</sys:String>

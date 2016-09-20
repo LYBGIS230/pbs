@@ -89,7 +89,42 @@
     <DownLoadExtent xmin="121.232653805037" ymin="31.198388892832" xmax="121.62954790081" ymax="31.4338634638406"/>
     <MainTypeUrlConfig path="BaiduMaps.xml"/>
   </TileInfo>
-  <TileInfo type="OtherMap3" subType="default" name="default">
+  <TileInfo type="OtherMap" subType="TaiZhou" name="default">
+    <MapUrl value="http://33.224.13.20/fmapimg_chi/"/>
+    <SpatialReference wkid="102113"/>
+    <Rows value="256"/>
+    <Cols value="256"/>
+    <Dpi  value="96"/>
+    <Origin x="-20037508.3427892" y = "20037508.3427892"/>
+    <Lods>
+      <Lod  level="0" resolution="156543.03392804062" scale="593997282.8890078"/>
+      <Lod  level="1" resolution="78271.51696402031" scale="296998641.4445039"/>
+      <Lod  level="2" resolution="39135.758482010155" scale="148499320.72225197"/>
+      <Lod  level="3" resolution="19567.8792410050" scale="74249660.3611259"/>
+      <Lod  level="4" resolution="9783.9396205" scale="37124830.1805629928"/>
+      <Lod  level="5" resolution="4891.9698102" scale="18562415.09028149"/>
+      <Lod  level="6" resolution="2445.98490512" scale="9281207.545140748"/>
+      <Lod  level="7" resolution="1222.992452562" scale="4640603.77257037"/>
+      <Lod  level="8" resolution="611.496226" scale="2320301.886285187"/>
+      <Lod  level="9" resolution="305.7481131" scale="1160150.943142593"/>
+      <Lod  level="10" resolution="152.8740565" scale="580075.471571296"/>
+      <Lod  level="11" resolution="76.4370282" scale="290037.735785648"/>
+      <Lod  level="12" resolution="38.21851414" scale="145018.8678928241"/>
+      <Lod  level="13" resolution="19.109257071" scale="72509.4339464120"/>
+      <Lod  level="14" resolution="9.5546285356" scale="36254.7169732060"/>
+      <Lod  level="15" resolution="4.777314267" scale="18127.358486603"/>
+      <Lod  level="16" resolution="2.38865713391" scale="9063.6792433015"/>
+      <Lod  level="17" resolution="1.19432856695" scale="4531.83962165075"/>
+      <Lod  level="18" resolution="0.5971642834775" scale="2265.919810825"/>
+      <Lod  level="19" resolution="0.2985821417387" scale="1132.959905412"/>
+    </Lods>
+    <InitialExtent xmin="120.28333" ymin="28.01667" xmax="121.93333" ymax="29.33333"/>
+    <FullExtent xmin="-20037508.3427892" ymin="-20037508.3427892" xmax="20037508.3427892" ymax="20037508.3427892"/>
+    <DownLoadExtent xmin="120.28333" ymin="28.01667" xmax="121.93333" ymax="29.33333"/>
+    <MainTypeUrlConfig path="Unknown.xml"/>
+  </TileInfo>
+  
+  <TileInfo type="OtherMap1" subType="default2" name="default">
     <MapUrl value="http://172.16.137.51:50028/liuzhou/EzMap?Service=getImage&amp;Type=RGB&amp;ZoomOffset=0&amp;Col={2}&amp;Row={1}&amp;Zoom={0}&amp;V=1.0.0"/>
     <SpatialReference wkid="4490"/>
     <Rows value="256"/>

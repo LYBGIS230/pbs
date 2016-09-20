@@ -25,13 +25,26 @@ namespace PBS.DataSource
 
         protected void ReadOtherMapTilingScheme(out TilingScheme tilingScheme)
         {
-            tilingScheme = SchemaProvider.Inst.getSchema(this.Type, null, null);
+            tilingScheme = SchemaProvider.Inst.getSchema("OtherMap", this.Type, "default");
         }
 
         public override byte[] GetTileBytes(int level, int row, int col)
         {
-            string baseUrl = SchemaProvider.Inst.GetDownloadUrl(this.Type, "default", "default");
+            string baseUrl = SchemaProvider.Inst.GetDownloadUrl("OtherMap", this.Type, "default");
+            if (String.Equals(this.Type, "TaiZhou"))
+            {
+                if (level <= 6)
+                {
+                    baseUrl = baseUrl + "/{0}/{0}-{2}-{1}.png";
+                }
+                else
+                {
+                    //台州写死了R13/C26，这两个值应该是第五层的Row和Col值，其他城市要用，最好通过row col以及level反推出第五层的R和C
+                    baseUrl = baseUrl + "/{0}/R13/C26/{0}-{2}-{1}.png";
+                }
+            }
             baseUrl = string.Format(baseUrl, level, row,col);
+            
             try
             {
                 return HttpGetTileBytes(baseUrl);

@@ -39,6 +39,7 @@
     <sys:String x:Key="menuAbout">About</sys:String>
     <!--interface-->
     <sys:String x:Key="tbDataSourceType">Data Source Type:</sys:String>
+    <sys:String x:Key="tbSubType">Sub Type:</sys:String>
     <sys:String x:Key="btnArcGISDynamicMapServiceParams">Additional Parameters</sys:String>
     <sys:String x:Key="btnDoBatchJob">Batch Job</sys:String>
     <sys:String x:Key="tbTilingScheme">Tiling Scheme File:</sys:String>

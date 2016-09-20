@@ -993,7 +993,7 @@ Invalid version!
             {
                 string name, datasourcepath, tilingschemepath;
                 int port;
-                string strDataSourceType;
+                string strDataSourceType, strDataSourceSubType;
                 bool allowmemorycache, disableclientcache, displaynodatatile;
                 VisualStyle visualstyle;
                 #region parsing params
@@ -1011,6 +1011,7 @@ Invalid version!
                     name = htParams["name"].ToString();
                     port = int.Parse(htParams["port"].ToString());
                     strDataSourceType = htParams["dataSourceType"].ToString();
+                    strDataSourceSubType = htParams["dataSourceSubType"].ToString();
                     datasourcepath = htParams["dataSourcePath"].ToString();
                     allowmemorycache = htParams["allowMemoryCache"] == null ? true : (bool)htParams["allowMemoryCache"];
                     disableclientcache = htParams["disableClientCache"] == null ? false : (bool)htParams["disableClientCache"];
@@ -1029,7 +1030,7 @@ Invalid version!
                 }
                 #endregion
                 string str = string.Empty;
-                str = ServiceManager.CreateService(name, port, strDataSourceType, datasourcepath, allowmemorycache, disableclientcache, displaynodatatile, visualstyle, tilingschemepath);
+                str = ServiceManager.CreateService(name, port, strDataSourceType, strDataSourceSubType, datasourcepath, allowmemorycache, disableclientcache, displaynodatatile, visualstyle, tilingschemepath);
                 if (str != string.Empty)
                     result = @"{
                     ""success"": false,

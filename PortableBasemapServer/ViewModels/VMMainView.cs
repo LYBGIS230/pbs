@@ -65,6 +65,7 @@ namespace PBS.APP.ViewModels
                 return ServiceManager.Services;
             }
         }
+        private ObservableCollection<string> _dataSourceSubTypes = new ObservableCollection<string>();
         private ObservableCollection<string> _dataSourceTypes = new ObservableCollection<string>();
         /// <summary>
         /// binding to datasourcetypes combobox
@@ -81,7 +82,20 @@ namespace PBS.APP.ViewModels
                 NotifyPropertyChanged(p => p.DataSourceTypes);
             }
         }
+        public ObservableCollection<string> DataSourceSubTypes
+        {
+            get
+            {
+                return _dataSourceSubTypes;
+            }
+            private set
+            {
+                _dataSourceSubTypes = value;
+                NotifyPropertyChanged(p => p.DataSourceSubTypes);
+            }
+        }
         private string _valueDataSourceType;
+        private string _valueDataSourceSubType;
         /// <summary>
         /// string value of the currently selected datasourcetype
         /// </summary>
@@ -96,6 +110,18 @@ namespace PBS.APP.ViewModels
                 _valueDataSourceType = value;
                 DataSourceTypeSelectionChanged();
                 NotifyPropertyChanged(p => p.ValueDataSourceType);
+            }
+        }
+        public string ValueDataSourceSubType
+        {
+            get
+            {
+                return _valueDataSourceSubType;
+            }
+            set
+            {
+                _valueDataSourceSubType = value;
+                NotifyPropertyChanged(p => p._valueDataSourceSubType);
             }
         }
         private ObservableCollection<string> _visualStyles = new ObservableCollection<string>();
@@ -394,7 +420,6 @@ namespace PBS.APP.ViewModels
             NotifyPropertyChanged(p => p.IsBrowseButtonVisible);
             }
         }
-        private Visibility _isOriginVisible;
         /// <summary>
         /// binding data source path browse button's availability
         /// </summary>
@@ -422,6 +447,7 @@ namespace PBS.APP.ViewModels
             }
         }
         private Visibility _isAGSDMSParamsButtonVisible;
+        private Visibility _isSubTypeVisible;
         /// <summary>
         /// bingding to ArcGISDynamicMapServiceParams button's visibility
         /// </summary>
@@ -430,6 +456,15 @@ namespace PBS.APP.ViewModels
             get { return _isAGSDMSParamsButtonVisible; }
             private set { _isAGSDMSParamsButtonVisible = value;
             NotifyPropertyChanged(p => p.IsAGSDMSParamsButtonVisible);
+            }
+        }
+        public Visibility IsSubTypeVisible
+        {
+            get { return _isSubTypeVisible; }
+            private set
+            {
+                _isSubTypeVisible = value;
+                NotifyPropertyChanged(p => p.IsSubTypeVisible);
             }
         }
         #endregion
@@ -455,6 +490,11 @@ namespace PBS.APP.ViewModels
             {
                 DataSourceTypes.Add(t.ToString());
             }
+            foreach (OtherMapSubType t in Enum.GetValues(typeof(OtherMapSubType)))
+            {
+                DataSourceSubTypes.Add(t.ToString());
+            }
+            DataSourceSubTypes.Add("");
             try
             {
                 foreach (var map in DataSourceCustomOnlineMaps.CustomOnlineMaps)
@@ -471,6 +511,7 @@ namespace PBS.APP.ViewModels
                 throw new Exception(e.Message);
             }
             ValueDataSourceType = DataSourceTypes[0];
+            ValueDataSourceSubType = DataSourceSubTypes[0];
 
             //in case of returned rest response Stream not be released
             DispatcherTimer dt = new DispatcherTimer()
@@ -1003,6 +1044,7 @@ namespace PBS.APP.ViewModels
                         ValueServiceName,
                         int.Parse(ValueServicePort),
                         ValueDataSourceType,
+                        ValueDataSourceSubType,
                         ValueDataSourcePath,
                         IsAllowMemoryCache,
                         IsDisableClientCache,
@@ -1016,6 +1058,7 @@ namespace PBS.APP.ViewModels
                         ValueServiceName,
                         int.Parse(ValueServicePort),
                         ValueDataSourceType,
+                        ValueDataSourceSubType,
                         ValueDataSourcePath,
                         IsAllowMemoryCache,
                         IsDisableClientCache,
@@ -1058,9 +1101,7 @@ namespace PBS.APP.ViewModels
                         ValueDataSourceType != DataSourceTypePredefined.MobileAtlasCreator.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.RasterImage.ToString()&&
                         ValueDataSourceType != DataSourceTypePredefined.OGCWMSService.ToString()&&
-                        ValueDataSourceType != DataSourceTypePredefined.OtherMap.ToString()&&
-                        ValueDataSourceType != DataSourceTypePredefined.OtherMapRoadProxy.ToString()&&
-                        ValueDataSourceType != DataSourceTypePredefined.OtherMapImageProxy.ToString())
+                        ValueDataSourceType != DataSourceTypePredefined.OtherMap.ToString())
                     {
                         MessageBox.Show(Application.Current.FindResource("msgOnlineMapsWarning").ToString(), Application.Current.FindResource("msgWarning").ToString(), MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
@@ -1147,6 +1188,7 @@ namespace PBS.APP.ViewModels
             IsAllowMemoryCache = true;
             IsDisableClientCache = IsDisplayNoDataTile = false;
             IsAGSDMSParamsButtonVisible = Visibility.Collapsed;
+            IsSubTypeVisible = Visibility.Collapsed;
             //tilingscheme stack panel's visibility & usinggoogletilingscheme checkbox check status
             if (ValueDataSourceType == DataSourceTypePredefined.RasterImage.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.ArcGISDynamicMapService.ToString() ||
@@ -1226,6 +1268,10 @@ namespace PBS.APP.ViewModels
                 IsBrowseButtonEnabled = true;
             else
                 IsBrowseButtonEnabled = false;
+            if (ValueDataSourceType == DataSourceTypePredefined.OtherMap.ToString())
+                IsSubTypeVisible = Visibility.Visible;
+            else
+                IsSubTypeVisible = Visibility.Hidden;
         }
 
         /// <summary>
@@ -1258,6 +1304,11 @@ namespace PBS.APP.ViewModels
                 IsAGSDMSParamsButtonVisible = Visibility.Visible;
             else
                 IsAGSDMSParamsButtonVisible = Visibility.Collapsed;
+
+            if(service.DataSource.Type == DataSourceTypePredefined.OtherMap.ToString())
+                IsSubTypeVisible = Visibility.Visible;
+            else
+                IsSubTypeVisible = Visibility.Collapsed;
 
             ValueDataSourcePath = service.DataSource.Path;
             ValueServicePort = service.Port.ToString();            

@@ -149,7 +149,7 @@ namespace PBS.APP.ViewModels
                     ServiceManager.DeleteService(_port, _hiddenServiceName);
                 else
                     _hiddenServiceName = _hiddenServiceName + ServiceManager.PortEntities[_port].ServiceProvider.Services.Count(service => service.Key.Contains(_hiddenServiceName)).ToString();//INTERNALDOWNLOAD0,INTERNALDOWNLOAD1...
-                _pbsService = new PBSService(_hiddenServiceName, "", _port, SelectedDatasourceType, false, true, true, VisualStyle.None, null);
+                _pbsService = new PBSService(_hiddenServiceName, "", _port, SelectedDatasourceType, "", false, true, true, VisualStyle.None, null);
                 
                 ServiceManager.PortEntities[_port].ServiceProvider.Services.Add(_pbsService.ServiceName, _pbsService);
                 _map.Layers.RemoveAt(0);

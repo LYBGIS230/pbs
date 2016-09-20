@@ -32,6 +32,8 @@ namespace PBS.DataSource
         /// including predefined datasourcetype and custom online maps.
         /// </summary>
         public string Type { get; set; }
+
+        public string subType { get; set; }
         /// <summary>
         /// data source path
         /// </summary>
@@ -1337,9 +1339,14 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
         TianDiTuAnnotation,
         TianDiTuMap,
         OtherMap,
-        OtherMapRoadProxy,
-        OtherMapImageProxy,
         BaiDuOnline
+    }
+
+    public enum OtherMapSubType
+    {
+        PGISRoad,
+        PGISImagery,
+        TaiZhou
     }
 
 

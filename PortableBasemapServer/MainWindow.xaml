@@ -46,7 +46,9 @@
                         <TextBlock Text="{DynamicResource tbDataSourceType}" Padding="0,0,10,0" VerticalAlignment="Center" />
                         <ComboBox x:Name="cmbboxDataSourceType" Width="Auto" ItemsSource="{Binding DataSourceTypes,Mode=OneWay}" SelectedItem="{Binding ValueDataSourceType,Mode=TwoWay}" />
                         <!--IsChecked="{Binding IsBaiDuCache,Mode=TwoWay}"-->
-                        <CheckBox x:Name="chkboxIsBaiDuCache" Content="{DynamicResource chkboxIsBaiDu}" Visibility="Hidden" VerticalAlignment="Center" Margin="20,0,0,0"/>
+                        <TextBlock Text="{DynamicResource tbSubType}" Padding="0,0,10,0" Visibility="{Binding IsSubTypeVisible,Mode=OneWay}" VerticalAlignment="Center" />
+                        <ComboBox x:Name="cmbboxDataSourceSubType" Width="Auto" Visibility="{Binding IsSubTypeVisible,Mode=OneWay}" ItemsSource="{Binding DataSourceSubTypes,Mode=OneWay}" SelectedItem="{Binding ValueDataSourceSubType,Mode=TwoWay}" />
+                        
                         <Button x:Name="btnArcGISDynamicMapServiceParams" Content="{DynamicResource btnArcGISDynamicMapServiceParams}" Visibility="{Binding IsAGSDMSParamsButtonVisible,Mode=OneWay}" Command="{Binding CMDArcGISDynamicMapServiceParams}"/>
                     </StackPanel>                    
                     <!--Tile Source Path-->

@@ -1346,7 +1346,8 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
     {
         PGISRoad,
         PGISImagery,
-        TaiZhou
+        TaiZhou,
+        GanSu
     }
 
 

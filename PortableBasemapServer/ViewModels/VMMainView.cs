@@ -1281,6 +1281,7 @@ namespace PBS.APP.ViewModels
         private void SelectedServiceChanged(PBSService service)
         {
             ValueDataSourceType = service.DataSource.Type;
+            ValueDataSourceSubType = service.DataSource.subType;
             if (service.DataSource.Type == DataSourceTypePredefined.ArcGISDynamicMapService.ToString() || service.DataSource.Type == DataSourceTypePredefined.ArcGISImageService.ToString() || service.DataSource.Type == DataSourceTypePredefined.RasterImage.ToString() || service.DataSource.Type == DataSourceTypePredefined.OGCWMSService.ToString())//service.DataSource.Type==DataSourceType.WMSService||
             {
                 IsTilingSchemePanelVisible = Visibility.Visible;

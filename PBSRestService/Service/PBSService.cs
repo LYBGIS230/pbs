@@ -77,15 +77,31 @@ namespace PBS.Service
                         }
                         else if (String.Equals("PGISRoad", strSubType))
                         {
-                            DataSource = new DataSourceOtherMapProxy("OtherMapRoadProxy");
+                            DataSource = new DataSourceOtherMapProxy("OtherMapRoadProxy")
+                            {
+                                Type = strType,
+                                subType = strSubType
+                            };
                         }
                         else if (String.Equals("PGISImagery", strSubType))
                         {
-                            DataSource = new DataSourceOtherMapProxy("OtherMapImageProxy");
+                            DataSource = new DataSourceOtherMapProxy("OtherMapImageProxy")
+                            {
+                                Type = strType,
+                                subType = strSubType
+                            };
                         }
                         else if (String.Equals("TaiZhou", strSubType))
                         {
-                            DataSource = new DataSourceOtherMapProxy("TaiZhou");
+                            DataSource = new DataSourceOtherMapProxy("TaiZhou")
+                            {
+                                Type = strType,
+                                subType = strSubType
+                            };
+                        }
+                        else if (String.Equals("GanSu", strSubType))
+                        {
+                            DataSource = new DataSourceMultiMBTiles(strType, strSubType);
                         }
                         break;
                     case DataSourceTypePredefined.MBTiles:

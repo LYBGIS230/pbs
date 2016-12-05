@@ -819,7 +819,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
             if (_dictTilesToBeLocalCached.ContainsKey(key))
                 return;
             _dictTilesToBeLocalCached.TryAdd(key, a.TileBytes);
-            if (_dictTilesToBeLocalCached.Count ==1000)
+            if (_dictTilesToBeLocalCached.Count >=1000)
             {
                 WriteTilesToLocalCacheFile(_dictTilesToBeLocalCached);
                 _dictTilesToBeLocalCached.Clear();

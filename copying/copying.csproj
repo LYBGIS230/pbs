@@ -42,9 +42,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="Commons.dll" />
-    <Compile Include="CustomOnlineMaps.xml">
+    <Content Include="CustomOnlineMaps.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    </Content>
     <None Include="gdal18.dll" />
     <None Include="gdalbuildvrt.exe" />
     <None Include="gdalplugins\gdal_ECW_JP2ECW.dll" />

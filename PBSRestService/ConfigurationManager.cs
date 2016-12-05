@@ -210,8 +210,8 @@ namespace PBS
                             cmd.Parameters.AddWithValue("@configuration", name);
                             cmd.Parameters.AddWithValue("@name", service.ServiceName);
                             cmd.Parameters.AddWithValue("@port", service.Port);
-                            cmd.Parameters.AddWithValue("@type", service.DataSource.Type.ToString());
-                            cmd.Parameters.AddWithValue("@subtype", service.DataSource.subType.ToString());
+                            cmd.Parameters.AddWithValue("@type", service.DataSource.Type);
+                            cmd.Parameters.AddWithValue("@subtype", service.DataSource.subType);
                             cmd.Parameters.AddWithValue("@tilingschemepath", service.DataSource.TilingScheme.Path);
                             cmd.Parameters.AddWithValue("@using3857", service.DataSource.TilingScheme.WKID == 102100||service.DataSource.TilingScheme.WKID==3857 ? true : false);
                             cmd.Parameters.AddWithValue("@datasourcepath", service.DataSource.Path);

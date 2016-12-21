@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Timers;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 
 namespace PBS.DataSource
 {
@@ -183,9 +184,25 @@ namespace PBS.DataSource
 
         private string parseTrafficHisTime(string time)// input format: "{day:1,hour:11,time:1}"
         {
-            Regex reg = new Regex(",hour:(\\d+),");
-            int requestHour = int.Parse(reg.Match(time).Groups[1].Value);
-            return (requestHour * 3600 * 1000).ToString();
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            DataSourceBaiDuTileProxy.TrafficHisParam p = jss.Deserialize<DataSourceBaiDuTileProxy.TrafficHisParam>(time);
+           
+            long timeOffset;
+            if ("1".Equals(p.time))
+            {
+                // 路况预测（取一周的历史作为预测），如果离线数据集不是从周一开始，可能看上去不太对
+                int requestDay = int.Parse(p.day);
+                int requestHour = int.Parse(p.hour);
+                timeOffset = (requestDay * 24 * 3600 + requestHour * 3600 ) * 1000;
+            }
+            else
+            {
+                // 路况历史
+                long requestTime = long.Parse(p.time);
+                timeOffset = requestTime % (30 * 24 * 3600 * 1000L);
+            }
+            
+            return timeOffset.ToString();
         }
 
         private string parseTrifficTime(string time)

@@ -127,7 +127,7 @@ namespace PBS.DataSource
             this.Type = name;
             this.Path = "";
         }
-        private class TrafficHisParam
+        public class TrafficHisParam
         {
             public string day { get; set; }
             public string hour { get; set; }

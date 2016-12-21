@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using PBS.APP.Classes;
 using PBS.Service;
 
 namespace PBS.APP
@@ -148,6 +149,8 @@ namespace PBS.APP
             {
                 (DataContext as VMMainView).initInstantCache();
             }
+            var runningMode = AppUtility.ReadConfig("RunningMode", "OFFLINE");
+            this.Title += runningMode == "OFFLINE" ? "[离线]" : "[在线]";
         }
     }
 }

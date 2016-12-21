@@ -394,15 +394,15 @@ Built using the  <a href=""http://resources.esri.com/arcgisserver/apis/javascrip
         }
         public Stream GenerateBaiduTile(string serviceName, string level, string row, string col, string type, string time)
         {
-            string ip = Utility.GetRequestIPAddress();
-            if (!Services[serviceName].LogInfo.RequestedIPs.Contains(ip))
-            {
-                Services[serviceName].LogInfo.RequestedIPs.Add(ip);
-            }
-            Services[serviceName].LogInfo.RequestedClientCounts = Services[serviceName].LogInfo.RequestedIPs.Count;
-            Services[serviceName].LogInfo.LastRequestClientIP = ip;
             if (Services.ContainsKey(serviceName))
             {
+                string ip = Utility.GetRequestIPAddress();
+                if (!Services[serviceName].LogInfo.RequestedIPs.Contains(ip))
+                {
+                    Services[serviceName].LogInfo.RequestedIPs.Add(ip);
+                }
+                Services[serviceName].LogInfo.RequestedClientCounts = Services[serviceName].LogInfo.RequestedIPs.Count;
+                Services[serviceName].LogInfo.LastRequestClientIP = ip;
                 string suffix = Services[serviceName].DataSource.TilingScheme.CacheTileFormat.ToString().ToUpper().Contains("PNG") ? "png" : "jpg";
                 WebOperationContext.Current.OutgoingResponse.ContentType = "image/" + suffix;
                 WebOperationContext.Current.OutgoingResponse.Headers["X-Powered-By"] = PBSName;
@@ -449,17 +449,18 @@ Built using the  <a href=""http://resources.esri.com/arcgisserver/apis/javascrip
 
         public Stream GenerateArcGISTile(string serviceName, string level, string row, string col)
         {
-            #region loginfo
-            string ip = Utility.GetRequestIPAddress();
-            if (!Services[serviceName].LogInfo.RequestedIPs.Contains(ip))
-            {
-                Services[serviceName].LogInfo.RequestedIPs.Add(ip);
-            }
-            Services[serviceName].LogInfo.RequestedClientCounts = Services[serviceName].LogInfo.RequestedIPs.Count;
-            Services[serviceName].LogInfo.LastRequestClientIP = ip;
-            #endregion
             if (Services.ContainsKey(serviceName))
             {
+                #region loginfo
+                string ip = Utility.GetRequestIPAddress();
+                if (!Services[serviceName].LogInfo.RequestedIPs.Contains(ip))
+                {
+                    Services[serviceName].LogInfo.RequestedIPs.Add(ip);
+                }
+                Services[serviceName].LogInfo.RequestedClientCounts = Services[serviceName].LogInfo.RequestedIPs.Count;
+                Services[serviceName].LogInfo.LastRequestClientIP = ip;
+                #endregion
+
                 string suffix = Services[serviceName].DataSource.TilingScheme.CacheTileFormat.ToString().ToUpper().Contains("PNG") ? "png" : "jpg";
                 WebOperationContext.Current.OutgoingResponse.ContentType = "image/" + suffix;
                 WebOperationContext.Current.OutgoingResponse.Headers["X-Powered-By"] = PBSName;

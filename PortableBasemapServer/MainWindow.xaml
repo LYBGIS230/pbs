@@ -168,6 +168,8 @@
            DisplayMemberBinding="{Binding Port}" />
                         <GridViewColumn Width="150" Header="{DynamicResource gvheaderDataSourceType}"
            DisplayMemberBinding="{Binding DataSource.Type}" />
+                        <GridViewColumn Width="150" Header="{DynamicResource gvheaderDataSourceSubType}"
+           DisplayMemberBinding="{Binding DataSource.subType}" />
                         <GridViewColumn Width="140">
                             <GridViewColumnHeader>
                                 <TextBlock TextWrapping="Wrap" Text="{DynamicResource gvheaderOutputCount}" />

@@ -76,6 +76,7 @@ http://domain3/ArcGIS/rest/service1/MapServer
     <sys:String x:Key="gvheaderServiceName">Service Name</sys:String>
     <sys:String x:Key="gvheaderServicePort">Service Port</sys:String>
     <sys:String x:Key="gvheaderDataSourceType">Data Source Type</sys:String>
+    <sys:String x:Key="gvheaderDataSourceSubType">Data Source Sub Type</sys:String>
     <sys:String x:Key="gvheaderOutputCount">Output Tile Count  (MemCached/FileCache/Dynamic)</sys:String>
     <sys:String x:Key="gvheaderSecondPerTile">Senconds Per Tile</sys:String>
     <sys:String x:Key="gvheaderLastClientIP">Last Client IP Address</sys:String>

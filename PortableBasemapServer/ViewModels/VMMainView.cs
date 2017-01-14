@@ -1157,7 +1157,6 @@ namespace PBS.APP.ViewModels
                 try
                 {
                     BaiDuMapManager.inst.initCache();
-                    MessageBox.Show("Init instant cache succeed !");
                 }
                 catch (Exception e)
                 {

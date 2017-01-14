@@ -44,6 +44,7 @@
     <None Include="Commons.dll" />
     <Content Include="CustomOnlineMaps.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <None Include="gdal18.dll" />
     <None Include="gdalbuildvrt.exe" />

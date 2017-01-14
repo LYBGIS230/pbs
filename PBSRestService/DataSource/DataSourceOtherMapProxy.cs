@@ -30,7 +30,7 @@ namespace PBS.DataSource
 
         public override byte[] GetTileBytes(int level, int row, int col)
         {
-            string baseUrl = SchemaProvider.Inst.GetDownloadUrl("OtherMap", this.Type, "default");
+            string baseUrl = SchemaProvider.Inst.GetDownloadUrl("OtherMap", this.subType, "default");
             if (String.Equals(this.Type, "TaiZhou"))
             {
                 if (level <= 6)

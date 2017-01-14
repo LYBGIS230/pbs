@@ -77,7 +77,15 @@ namespace PBS.Service
                         }
                         else if (String.Equals("PGISRoad", strSubType))
                         {
-                            DataSource = new DataSourceOtherMapProxy("OtherMapRoadProxy")
+                            DataSource = new DataSourceOtherMapProxy("PGISRoad")
+                            {
+                                Type = strType,
+                                subType = strSubType
+                            };
+                        }
+                        else if (String.Equals("PGISRoadMark", strSubType))
+                        {
+                            DataSource = new DataSourceOtherMapProxy("PGISRoadMark")
                             {
                                 Type = strType,
                                 subType = strSubType
@@ -85,7 +93,7 @@ namespace PBS.Service
                         }
                         else if (String.Equals("PGISImagery", strSubType))
                         {
-                            DataSource = new DataSourceOtherMapProxy("OtherMapImageProxy")
+                            DataSource = new DataSourceOtherMapProxy("PGISImagery")
                             {
                                 Type = strType,
                                 subType = strSubType

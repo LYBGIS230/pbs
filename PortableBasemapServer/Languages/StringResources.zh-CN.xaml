@@ -75,6 +75,7 @@ http://domain3/ArcGIS/rest/service1/MapServer
     <sys:String x:Key="gvheaderServiceName">服务名称</sys:String>
     <sys:String x:Key="gvheaderServicePort">服务端口</sys:String>
     <sys:String x:Key="gvheaderDataSourceType">数据源类型</sys:String>
+    <sys:String x:Key="gvheaderDataSourceSubType">数据源子类型</sys:String>
     <sys:String x:Key="gvheaderOutputCount">输出切片数量  (内存缓存/文件缓存/动态输出)</sys:String>
     <sys:String x:Key="gvheaderSecondPerTile">切片平均输出时间</sys:String>
     <sys:String x:Key="gvheaderLastClientIP">最后访问的客户端IP</sys:String>

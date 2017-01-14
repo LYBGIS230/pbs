@@ -169,3 +169,5 @@ PBSRestService/bin/Debug/PBS.pdb
 PBSRestService/bin/Debug/PBS.dll
 PBSRestService/bin/Debug/Memcached.ClientLibrary.dll
 PBSRestService/bin/Debug/ICSharpCode.SharpZipLib.dll
+PortableBasemapServer/bin/Debug/cache/
+PortableBasemapServer/bin/Debug/

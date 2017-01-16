@@ -112,6 +112,7 @@
     <Compile Include="DataSource\ImageConvertor.cs" />
     <Compile Include="Service\BdCoodOffsetProvider.cs" />
     <Compile Include="Service\CacheVersionProvider.cs" />
+    <Compile Include="Service\NoCacheVersionProvider.cs" />
     <Compile Include="Service\IPBSServiceProvider.cs" />
     <Compile Include="Service\PBSService.cs" />
     <Compile Include="Service\PBSServiceProvider.cs" />

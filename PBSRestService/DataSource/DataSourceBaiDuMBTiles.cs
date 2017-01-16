@@ -23,6 +23,8 @@ namespace PBS.DataSource
         }
         private DataSourceType serviceType;
         private SQLiteConnection _sqlConn;
+        // 有网络情况下，对于实时路况和路况预测，还是可以使用百度在线的服务的
+        private DataSourceBaiDuTileProxy baiDuTileProxy;
         public DataSourceBaiDuMBTiles(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -34,6 +36,7 @@ namespace PBS.DataSource
                 this.serviceType = DataSourceType.STATIC;               
             }
             Initialize(path);
+            baiDuTileProxy = new DataSourceBaiDuTileProxy("BaiDuOnline");
         }
         
         protected override void Initialize(string path)
@@ -184,25 +187,53 @@ namespace PBS.DataSource
 
         private string parseTrafficHisTime(string time)// input format: "{day:1,hour:11,time:1}"
         {
-            JavaScriptSerializer jss = new JavaScriptSerializer();
-            DataSourceBaiDuTileProxy.TrafficHisParam p = jss.Deserialize<DataSourceBaiDuTileProxy.TrafficHisParam>(time);
-           
+            var p = ParseJsonTime(time);
+
             long timeOffset;
             if ("1".Equals(p.time))
             {
-                // 路况预测（取一周的历史作为预测），如果离线数据集不是从周一开始，可能看上去不太对
+                // 路况预测（取一周的历史作为预测）这个目前是跑不到的分支
                 int requestDay = int.Parse(p.day);
                 int requestHour = int.Parse(p.hour);
-                timeOffset = (requestDay * 24 * 3600 + requestHour * 3600 ) * 1000;
+                DateTime now = DateTime.Now;
+                int currentDayOfWeek = (int) now.DayOfWeek;
+                DateTime timeInThisWeek = now.Add(
+                    new TimeSpan(
+                        requestDay - currentDayOfWeek, 
+                        requestHour - now.Hour,
+                        0 - now.Minute,
+                        0 - now.Second,
+                        0 - now.Millisecond
+                        ));
+                if (timeInThisWeek > now)
+                {
+                    DateTime targetTime = timeInThisWeek.Subtract(new TimeSpan(7, 0, 0, 0));
+                    timeOffset = GetTimeInMs(targetTime);
+                }
+                else
+                {
+                    timeOffset = GetTimeInMs(timeInThisWeek);
+                }
             }
             else
             {
                 // 路况历史
-                long requestTime = long.Parse(p.time);
-                timeOffset = requestTime % (30 * 24 * 3600 * 1000L);
+                timeOffset = long.Parse(p.time);
             }
             
             return timeOffset.ToString();
+        }
+
+        private static DataSourceBaiDuTileProxy.TrafficHisParam ParseJsonTime(string time)
+        {
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            DataSourceBaiDuTileProxy.TrafficHisParam p = jss.Deserialize<DataSourceBaiDuTileProxy.TrafficHisParam>(time);
+            return p;
+        }
+
+        private long GetTimeInMs(DateTime t)
+        {
+            return (long)(t - new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
 
         private string parseTrifficTime(string time)
@@ -220,42 +251,67 @@ namespace PBS.DataSource
             byte[] result = null;
             string time = "";
             Hashtable param = otherParam as Hashtable;
+            string timeParam = param["TIME"] as string;
+            // 预测和历史
             if ("TrafficHis".Equals(param["TYPE"]))
             {
-                time = parseTrafficHisTime(param["TIME"] as string);
+                var p = ParseJsonTime(timeParam);
+                if (p.time == "1")
+                {
+                    //预测
+                    return baiDuTileProxy.GetTileBytes(level, row, col, otherParam);
+                }
+                else
+                {
+                    //历史
+                    time = parseTrafficHisTime(timeParam);
+                    using (NoCacheVersionProvider noCacheVersionProvider = new NoCacheVersionProvider("versionsT.db"))
+                    {
+                        string filename = noCacheVersionProvider.GetTileFile(long.Parse(time));
+                        if (filename != null)
+                        {
+                            return GetTileFromFile(level, row, col, filename);
+                        }
+                        return null;
+                    }
+                }
             }
+            //实时
             else if("traffic".Equals(param["TYPE"]))
             {
-                time = parseTrifficTime(param["TIME"] as string);
+                return baiDuTileProxy.GetTileBytes(level, row, col, otherParam);
             }
             else if("hot".Equals(param["TYPE"] as string))
             {
-                time = parseHotTime(param["TIME"] as string);
+                time = parseHotTime(timeParam);
             }
             string fileName = BaiDuMapManager.inst.cp.getCacheFile(time, param["TYPE"] as string);
 
             if(fileName != null){
-                using (SQLiteConnection connection = new SQLiteConnection("Data source = cache/" + fileName))
+                result = GetTileFromFile(level, row, col, fileName);
+            }
+            return result;
+        }
+
+        private static byte[] GetTileFromFile(int level, int row, int col, string fileName)
+        {
+            byte[] result = null;
+            using (SQLiteConnection connection = new SQLiteConnection("Data source = " + fileName))
+            {
+                connection.Open();
+                string commandText =
+                    string.Format("SELECT {0} FROM tiles WHERE tile_column={1} AND tile_row={2} AND zoom_level={3}", "tile_data",
+                        col, row, level);
+                using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, connection))
                 {
-                    connection.Open();
-                    if (connection == null)
+                    object o = sqlCmd.ExecuteScalar();
+                        //null can not directly convert to byte[], if so, will return "buffer can not be null" exception
+                    if (o != null)
                     {
-                        result = new byte[0];
-                    }
-                    else
-                    {
-                        string commandText = string.Format("SELECT {0} FROM tiles WHERE tile_column={1} AND tile_row={2} AND zoom_level={3}", "tile_data", col, row, level);
-                        using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, connection))
-                        {
-                            object o = sqlCmd.ExecuteScalar();//null can not directly convert to byte[], if so, will return "buffer can not be null" exception
-                            if (o != null)
-                            {
-                                result = (byte[])o;
-                            }
-                        }
-                        connection.Close();
+                        result = (byte[]) o;
                     }
                 }
+                connection.Close();
             }
             return result;
         }

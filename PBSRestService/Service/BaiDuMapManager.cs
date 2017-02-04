@@ -85,9 +85,16 @@ namespace PBS.Service
             LatLng lpt = MetersToLatLon(org_leftBottom);
             LatLng testPoint = p.doAdjust(lpt, level);
             LatLng meters = BdCoodOffsetProvider.BaiduGPS2BaiduMercator(new LatLng(testPoint.latitude, testPoint.longitude));
+            double resolution = GetResolutionForLevel(level);
             System.Drawing.Point new_leftBottom = new System.Drawing.Point((int)(meters.longitude / resolution), (int)(meters.latitude / resolution));
             return new_leftBottom;
         }
+
+        private double GetResolutionForLevel(int level)
+        {
+            return Math.Pow(2, 18 - level) / MAPUNIT;
+        }
+
         public RCRange getArcgisRCRangeFromMercator(Envelope mercatorArea, int level)
         {
             double minRow = (cornerCoordinate - mercatorArea.YMax) / Math.Pow(2, 18 - level) / 256;
@@ -209,7 +216,7 @@ namespace PBS.Service
         public RCRange getBaiduRCRangeFromGPS(Envelope area, int level)
         {
             int PIC_SIZE = 256;
-            updateResolutionAndZoom(level);
+            double resolution = GetResolutionForLevel(level);
             BdCoodOffsetProvider p = BdCoodOffsetProvider.getInstance();
             LatLng leftTopLpt = new LatLng(area.YMax, area.XMin);
             LatLng testPoint = p.doAdjust(leftTopLpt, level);
@@ -356,10 +363,7 @@ namespace PBS.Service
         public double scaleFactor = 1;
         private Coordinate origin = new Coordinate(-20037508.3427892, 20037508.3427892);
         public int packetSize = 128;
-        private int zoomLevel = 0;
-        public double resolution;
         public double dpi = 96;
-        
         
         public class Coordinate
         {
@@ -417,7 +421,7 @@ namespace PBS.Service
         }
         public LatLngPoint getLatLngFromTile(int absoluteRow, int absoluteCol, double scale)
         {
-            setResolution(scale);
+            double resolution = 2.54 * scale / 100 / dpi / MAPUNIT;
             return tileToCoordArea(absoluteRow, absoluteCol, resolution * tileHeight, packetSize, origin).getLeftTop();
         }
         private Area tileToCoordArea(double absoluteRow, double absoluteCol, double tileWidthByMapUnit, int packetSize, Coordinate origin)
@@ -433,22 +437,12 @@ namespace PBS.Service
             result.YMin = minY;
             return result;
         }
-        private void setResolution(double scale)
-        {
-            resolution = 2.54 * scale / 100 / dpi / MAPUNIT;
-        }
+
         public double getScaleFromZoom(int z, double dpi)
         {
             return 100 * Math.Pow(2, 18 - z) / 2.54 * dpi / scaleFactor;
         }
-        private void updateResolutionAndZoom(int z)
-        {
-            if (zoomLevel != z)
-            {
-                resolution = Math.Pow(2, 18 - z)  / MAPUNIT;
-                zoomLevel = z;
-            }
-        }
+
         #endregion
     }
 }

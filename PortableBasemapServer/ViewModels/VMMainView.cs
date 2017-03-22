@@ -557,7 +557,7 @@ namespace PBS.APP.ViewModels
                 System.Net.IPHostEntry IpEntry = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
                 for (int i = 0; i != IpEntry.AddressList.Length; i++)
                 {
-                    if (!IpEntry.AddressList[i].IsIPv6LinkLocal && !IpEntry.AddressList[i].IsIPv6Multicast && !IpEntry.AddressList[i].IsIPv6SiteLocal && !IpEntry.AddressList[i].IsIPv6Teredo)
+                    if (IpEntry.AddressList[i].AddressFamily.ToString() == "InterNetwork" && !IpEntry.AddressList[i].IsIPv6LinkLocal && !IpEntry.AddressList[i].IsIPv6Multicast && !IpEntry.AddressList[i].IsIPv6SiteLocal && !IpEntry.AddressList[i].IsIPv6Teredo)
                     {
                         IPAddresses.Add(IpEntry.AddressList[i].ToString());
                     }

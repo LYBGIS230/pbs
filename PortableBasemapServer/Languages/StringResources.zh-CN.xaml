@@ -30,6 +30,7 @@
     <sys:String x:Key="miBaiduToMBTiles">百度地图--&gt;MBTiles...</sys:String>
     <sys:String x:Key="miCorrectBaiduRawTiles">百度地图纠偏</sys:String>
     <sys:String x:Key="miMergeMBTiles">MBTile合并</sys:String>
+    <sys:String x:Key="miCorrectGoogleRawTiles">谷歌地图纠偏</sys:String>
     <sys:String x:Key="miOtherToMBTiles">其他地图--&gt;MBTiles...</sys:String>
     <sys:String x:Key="menuAppearance">外观</sys:String>
     <sys:String x:Key="miLanguage">English</sys:String>

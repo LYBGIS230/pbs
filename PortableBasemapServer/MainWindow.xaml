@@ -29,6 +29,7 @@
                 <MenuItem x:Name="miOtherToMBTiles" Header="{DynamicResource miOtherToMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miOtherToMBTiles"/>
                 <MenuItem x:Name="miCorrectBaiduRawTiles" Header="{DynamicResource miCorrectBaiduRawTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miCorrectBaiduRawTiles"/>
                 <MenuItem x:Name="miMergeMBTiles" Header="{DynamicResource miMergeMBTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miMergeMBTiles"/>
+                <MenuItem x:Name="miCorrectGoogleRawTiles" Header="{DynamicResource miCorrectGoogleRawTiles}" Command="{Binding CMDClickMenuItem}" CommandParameter="miCorrectGoogleRawTiles"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menuAppearance}">
                 <MenuItem x:Name="miLanguage" Header="{DynamicResource miLanguage}" Command="{Binding CMDClickMenuItem}" CommandParameter="miLanguage" />

@@ -199,7 +199,7 @@ namespace PBS.Service
             int j;
             if (jpegCodec == null)
             {
-                String mimeType = "image/jpeg";
+                String mimeType = "image/png";
                 System.Drawing.Imaging.ImageCodecInfo[] encoders;
                 encoders = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders();
                 for (j = 0; j < encoders.Length; ++j)

@@ -69,6 +69,15 @@ namespace PBS.Service
             LatLng bd = transformFromGCJToBD(transformFromWGSToGCJ(o));
             return bd;
         }
+
+#region google-correct
+        public LatLng doGoogleCorrect(LatLng o, int zoom)
+        {
+            LatLng google = transformFromWGSToGCJ(o);
+            return google;
+        }
+#endregion
+
         //gcj转百度坐标
         public LatLng transformFromGCJToBD(LatLng gcjLoc)
         {

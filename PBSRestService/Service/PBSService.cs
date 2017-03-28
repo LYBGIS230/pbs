@@ -70,6 +70,9 @@ namespace PBS.Service
                     case DataSourceTypePredefined.BaiduMBTiles:
                         DataSource = new DataSourceBaiDuMBTiles(dataSourcePath);
                         break;
+                    case DataSourceTypePredefined.GoogleMBTiles:
+                        DataSource = new DataSourceGoogleMBTiles(dataSourcePath);
+                        break;
                     case DataSourceTypePredefined.OtherMap:
                         if (String.IsNullOrEmpty(strSubType))
                         {

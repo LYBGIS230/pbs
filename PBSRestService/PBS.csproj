@@ -96,6 +96,7 @@
     <Compile Include="DataSource\DataSourceArcGISDynamicMapService.cs" />
     <Compile Include="DataSource\DataSourceArcGISImageService.cs" />
     <Compile Include="DataSource\DataSourceBase.cs" />
+    <Compile Include="DataSource\DataSourceGoogleMBTiles.cs" />
     <Compile Include="DataSource\DataSourceMBTiles.cs" />
     <Compile Include="DataSource\DataSourceMAC.cs" />
     <Compile Include="DataSource\DataSourceMultiMBTiles.cs" />

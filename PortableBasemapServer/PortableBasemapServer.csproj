@@ -157,6 +157,9 @@
     <Compile Include="Forms\DebugWindow.xaml.cs">
       <DependentUpon>DebugWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GoogleCorrect.xaml.cs">
+      <DependentUpon>GoogleCorrect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MBTilesMerge.xaml.cs">
       <DependentUpon>MBTilesMerge.xaml</DependentUpon>
     </Compile>
@@ -219,6 +222,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\DebugWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\GoogleCorrect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

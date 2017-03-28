@@ -1326,6 +1326,7 @@ FROM map JOIN images ON images.tile_id = map.tile_id";
     public enum DataSourceTypePredefined
     {
         BaiduMBTiles,
+        GoogleMBTiles,
         MobileAtlasCreator,
         MBTiles,
         ArcGISCache,

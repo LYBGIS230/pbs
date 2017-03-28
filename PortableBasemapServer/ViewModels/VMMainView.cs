@@ -784,6 +784,18 @@ namespace PBS.APP.ViewModels
                 {
                 }
             }
+            else if (miHeader == "miCorrectGoogleRawTiles")
+            {
+                try
+                {
+                    GoogleCorrect correctWindow = new GoogleCorrect();
+                    correctWindow.Owner = Application.Current.MainWindow;
+                    correctWindow.Show();
+                }
+                catch (Exception)
+                {
+                }
+            }
             #endregion
             #region Appearance
             else if (miHeader == "miLanguage")
@@ -912,6 +924,7 @@ namespace PBS.APP.ViewModels
                         }
                     }
                     break;
+                case DataSourceTypePredefined.GoogleMBTiles:
                 case DataSourceTypePredefined.BaiduMBTiles:
                     openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
                     openFileDialog1.Title = Application.Current.FindResource("tbSelectSqliteFile").ToString();
@@ -1097,6 +1110,7 @@ namespace PBS.APP.ViewModels
                         ValueDataSourceType != DataSourceTypePredefined.ArcGISTilePackage.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.MBTiles.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.BaiduMBTiles.ToString() &&
+                        ValueDataSourceType != DataSourceTypePredefined.GoogleMBTiles.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.BaiDuOnline.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.MobileAtlasCreator.ToString() &&
                         ValueDataSourceType != DataSourceTypePredefined.RasterImage.ToString()&&
@@ -1230,6 +1244,7 @@ namespace PBS.APP.ViewModels
             if (ValueDataSourceType == DataSourceTypePredefined.MobileAtlasCreator.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.MBTiles.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.BaiduMBTiles.ToString() ||
+                ValueDataSourceType == DataSourceTypePredefined.GoogleMBTiles.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.OtherMap.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.ArcGISCache.ToString() || ValueDataSourceType == DataSourceTypePredefined.AutoNaviCache.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.ArcGISTilePackage.ToString() ||
@@ -1259,6 +1274,7 @@ namespace PBS.APP.ViewModels
             if (ValueDataSourceType == DataSourceTypePredefined.MobileAtlasCreator.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.MBTiles.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.BaiduMBTiles.ToString() ||
+                ValueDataSourceType == DataSourceTypePredefined.GoogleMBTiles.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.OtherMap.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.ArcGISCache.ToString() ||
                 ValueDataSourceType == DataSourceTypePredefined.AutoNaviCache.ToString() ||

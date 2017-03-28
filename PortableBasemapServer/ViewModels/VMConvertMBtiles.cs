@@ -142,10 +142,11 @@ namespace PBS.APP.ViewModels
                     string str1 = App.Current.FindResource("msgAdjustComplete").ToString();
                     MessageBox.Show(str1, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 };
+
                 BackgroundWorker bw = new BackgroundWorker();
                 bw.DoWork += (s, a) =>
                 {
-                    transferSource.ConvertToMBTiles(FileToCorrect, "", "", "", new int[] { 18, 19 }, null, false);
+                    transferSource.ConvertToMBTiles(FileToCorrect, "", "", "", new int[] { 11,12 }, null, false);
                 };
                 bw.RunWorkerAsync();
             }
@@ -264,6 +265,10 @@ namespace PBS.APP.ViewModels
                     _outputconn.Dispose();
                 };
                 bw.RunWorkerAsync();
+            }
+            else if (param == "START_GOOGLE")
+            {
+
             }
         }
     }

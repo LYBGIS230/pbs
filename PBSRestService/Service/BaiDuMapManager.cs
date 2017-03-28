@@ -81,10 +81,14 @@ namespace PBS.Service
         public System.Drawing.Point getNewPixelOffsetOfLeftTop(int level, int row1, int col1)
         {
             BdCoodOffsetProvider p = BdCoodOffsetProvider.getInstance();
+            //int tmsrow;
+            //int tmscol;
+            //Util.Utility.ConvertGoogleTileToTMSTile(level, row1, col1, out tmsrow, out tmscol);
             System.Drawing.Point org_leftBottom = getMetersFromRowCol(row1, col1, level);
             LatLng lpt = MetersToLatLon(org_leftBottom);
             LatLng testPoint = p.doAdjust(lpt, level);
             LatLng meters = BdCoodOffsetProvider.BaiduGPS2BaiduMercator(new LatLng(testPoint.latitude, testPoint.longitude));
+            //LatLng meters = p.doGoogleCorrect(lpt, level);
             double resolution = GetResolutionForLevel(level);
             System.Drawing.Point new_leftBottom = new System.Drawing.Point((int)(meters.longitude / resolution), (int)(meters.latitude / resolution));
             return new_leftBottom;

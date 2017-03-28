@@ -114,15 +114,7 @@ namespace PBS.DataSource
                             int row = int.Parse(kvp.Key.Split(new char[] { '/' })[2]);
                             string guid = Guid.NewGuid().ToString();
                             cmd.CommandText = "INSERT INTO images VALUES (@tile_data,@tile_id)";
-                            byte[] bt = kvp.Value;
-                            MemoryStream ms = new MemoryStream(bt);
-                            Bitmap bm = (Bitmap)Image.FromStream(ms);
-                            MemoryStream output = new MemoryStream();
-                            bm.Save(output, System.Drawing.Imaging.ImageFormat.Png);
-                            bt = output.GetBuffer();
-                            ms.Close();
-                            output.Close();
-                            cmd.Parameters.AddWithValue("tile_data", bt);
+                            cmd.Parameters.AddWithValue("tile_data", kvp.Value);
                             cmd.Parameters.AddWithValue("tile_id", guid);
                             cmd.ExecuteNonQuery();
                             cmd.CommandText = "INSERT INTO map VALUES (@zoom_level,@tile_column,@tile_row,@tile_id)";

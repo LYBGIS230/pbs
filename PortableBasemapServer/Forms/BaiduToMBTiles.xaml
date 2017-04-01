@@ -4,7 +4,7 @@
         xmlns:controls="clr-namespace:PBS.APP.Controls"
         xmlns:layer="clr-namespace:PBS.APP"
         xmlns:esri="http://schemas.esri.com/arcgis/client/2009"
-        Title="{DynamicResource titleBaiduToMBTiles}" Height="800" Width="800" WindowStartupLocation="CenterScreen">
+        Title="{DynamicResource titleBaiduToMBTiles}" Height="664" Width="831" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -55,21 +55,9 @@ namespace PBS.DataSource
 
         public override byte[] GetTileBytes(int level, int row, int col)
         {
-            //int tmsCol, tmsRow;
-            //Utility.ConvertGoogleTileToTMSTile(level, row, col, out tmsRow, out tmsCol);
-            //string commandText = string.Format("SELECT {0} FROM tiles WHERE tile_column={1} AND tile_row={2} AND zoom_level={3}", "tile_data", tmsCol, tmsRow, level);
-            return GoogleCoordCorrect(level, row, col);
-            //using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, _sqlConn))
-            //{
-            //    object o = sqlCmd.ExecuteScalar();//null can not directly convert to byte[], if so, will return "buffer can not be null" exception
-            //    if (o != null)
-            //    {
-            //        byte[] bytes = (byte[])o;
 
-            //        return bytes;
-            //    }
-            //    return null;
-            //}
+            return GoogleCoordCorrect(level, row, col);
+
         }
 
         #region GoogleCorrect
@@ -82,16 +70,17 @@ namespace PBS.DataSource
 
         private byte[] GoogleCoordCorrect(int level, int row, int col)
         {
-            // 7级及以下不进行偏移
-            if (level < 8)
-            {
-                return GetOrigTileBuffer(level,row,col);
-            }
-
             // 调整行号,level、col不变，因坐标系起点不同
             int tmsCol, tmsRow;
             Utility.ConvertTMSTileToGoogleTile(level, row, col, out tmsRow, out tmsCol);
 
+            // 7级及以下不进行偏移
+            if (level < 8)
+            {
+                return GetOrigTileBuffer(level, tmsRow, tmsCol);
+            }
+
+            // get pixels from row and col
             LatLng p0 = new LatLng(PIC_SIZE * tmsRow, PIC_SIZE * tmsCol);
             LatLng p1 = new LatLng(PIC_SIZE * tmsRow + PIC_SIZE, PIC_SIZE * tmsCol + PIC_SIZE);
 
@@ -116,6 +105,8 @@ namespace PBS.DataSource
 
         private byte[] GetOrigTileBuffer(int level, int row, int col)
         {
+            //int tmsCol, tmsRow;
+            //Utility.ConvertGoogleTileToTMSTile(level, row, col, out tmsRow, out tmsCol);
             string commandText = string.Format("SELECT {0} FROM tiles WHERE tile_column={1} AND tile_row={2} AND zoom_level={3}", "tile_data", col, row, level);
             using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, _sqlConn))
             {
@@ -132,13 +123,14 @@ namespace PBS.DataSource
 
         private byte[] GetModifiedTile(LatLng P0, LatLng P1, int level)
         {
+            // 数组T中，0代表经度相关，1代表纬度相关
             int[] T0 = PixelsToTile(P0);
             int[] T1 = PixelsToTile(P1);
 
             if (T0[0] == T1[0] && T0[1] == T1[1])
             {
                 //原封不动的Tile
-                return GetOrigTileBuffer(level, T0[0], T0[1]);
+                return GetOrigTileBuffer(level, T0[1], T0[0]);
             }
 
             // 需要重新截取的
@@ -155,9 +147,9 @@ namespace PBS.DataSource
             //2.拼接
             for (int x = 0; x < width / 256; ++x)
             {
-                for (int y = 0; y < height; ++y)
+                for (int y = 0; y < height / 256; ++y)
                 {
-                    byte[] obj = GetOrigTileBuffer(level, T0[0] + x, T0[1] + y);
+                    byte[] obj = GetOrigTileBuffer(level, T0[1] + y, T0[0] + x);
                     if (obj != null)
                     {
                         bimage = true;
@@ -172,19 +164,18 @@ namespace PBS.DataSource
             }
 
             //3.截图
-            int x0 = (int)P0.longitude - T0[0] * 256;
-            int y0 = 256 - ((int)P1.latitude - T1[1] * 256);
-            int width0 = (int)P1.longitude - (int)P0.longitude;
-            int height0 = (int)P1.latitude - (int)P0.latitude;
+            int x0 = (int)Math.Ceiling((P0.longitude - T0[0] * 256.0));
+            int y0 = (int)Math.Ceiling(256.0 - (P1.latitude - T1[1] * 256.0));
+            
+            int width0 = (int)Math.Ceiling(P1.longitude - P0.longitude);
+            int height0 = (int)Math.Ceiling(P1.latitude - P0.latitude);
 
-            //FastImageConvertor c = new FastImageConvertor();
-            //Bitmap destBitmap = c.ConvertToSquare(canvas, newLeftTop, newRightTop, newLeftBottom, newRightBottom);
-            //MemoryStream output = new MemoryStream();
-            //destBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
-            //byte[] bytes = output.GetBuffer();
-            //return bytes;
-
-            return null;
+            Bitmap destBitmap =
+                canvas.Clone(new Rectangle(x0, y0, width0, height0), canvas.PixelFormat);
+            MemoryStream output = new MemoryStream();
+            destBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
+            byte[] bytes = output.GetBuffer();
+            return bytes;
         }
 
         private double GetResolution(int level)
@@ -227,7 +218,7 @@ namespace PBS.DataSource
         private int[] PixelsToTile(LatLng loc)
         {
             int[] obj =
-            {(int)Math.Ceiling(loc.latitude / (float)tileSize) - 1, (int)Math.Ceiling(loc.longitude / (float)tileSize) - 1};
+            {(int)Math.Ceiling(loc.longitude / (float)tileSize) - 1, (int)Math.Ceiling(loc.latitude / (float)tileSize) - 1};
             
             return obj;
         }

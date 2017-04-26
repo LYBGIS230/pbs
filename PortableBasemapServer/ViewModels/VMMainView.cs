@@ -784,18 +784,6 @@ namespace PBS.APP.ViewModels
                 {
                 }
             }
-            else if (miHeader == "miCorrectGoogleRawTiles")
-            {
-                try
-                {
-                    GoogleCorrect correctWindow = new GoogleCorrect();
-                    correctWindow.Owner = Application.Current.MainWindow;
-                    correctWindow.Show();
-                }
-                catch (Exception)
-                {
-                }
-            }
             #endregion
             #region Appearance
             else if (miHeader == "miLanguage")

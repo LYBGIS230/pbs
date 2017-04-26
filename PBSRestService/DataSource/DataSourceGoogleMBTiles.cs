@@ -105,8 +105,6 @@ namespace PBS.DataSource
 
         private byte[] GetOrigTileBuffer(int level, int row, int col)
         {
-            //int tmsCol, tmsRow;
-            //Utility.ConvertGoogleTileToTMSTile(level, row, col, out tmsRow, out tmsCol);
             string commandText = string.Format("SELECT {0} FROM tiles WHERE tile_column={1} AND tile_row={2} AND zoom_level={3}", "tile_data", col, row, level);
             using (SQLiteCommand sqlCmd = new SQLiteCommand(commandText, _sqlConn))
             {
@@ -225,18 +223,19 @@ namespace PBS.DataSource
 
         private LatLng DoOffset(LatLng loc)
         {
-            Point p = GoogleMapOffset.transform(loc.longitude, loc.latitude);
+            Point p = GoogleDoOffset.transform(loc.longitude, loc.latitude);
             return new LatLng(p.Y, p.X);
         }
         #endregion
 
     }
 
-    #region 谷歌纠偏算法
 
-    public class GoogleMapOffset
+    #region 谷歌偏移算法
+
+    public class GoogleDoOffset
     {
-        private static double pi = Math.PI;
+        private static double pi = 3.14159265358979324;
 
         private static double a = 6378245.0;
 
@@ -267,7 +266,7 @@ namespace PBS.DataSource
 
             dLon = (dLon * 180.0) / (a / sqrtMagic * Math.Cos(radLat) * pi);
 
-            return new Point((double)(wgLon - dLon), (double)(wgLat - dLat));
+            return new Point((double)(wgLon + dLon), (double)(wgLat + dLat));
         }
 
         private static bool outOfChina(double lat, double lon)
